@@ -14,7 +14,7 @@ class Camera(PiCamera):
     videos_dir = ""
 
     def __init__(self):
-        config = ConfigParser.read('../resources/doorbell.properties')
+        config = ConfigParser().read('../resources/doorbell.properties')
 
         # Default location: current directory
         self.snapshots_dir = config.get('CAMERA', 'snapshots_dir',
