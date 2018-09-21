@@ -3,11 +3,14 @@
 import soundex
 import wave
 
+from doorbell.Microphone import MicrophoneImpl
+
 
 class Resident:
 
     isAtHome = False
     s = soundex.getInstance()
+    m = MicrophoneImpl()
 
     def __init__(self, text_name, name_sounds_file_paths):
         # A list of sound files containing pronunciations of this resident's name
@@ -27,12 +30,12 @@ class Resident:
     def send_remote_notification(self):
         pass  # TODO
 
-    def requested_name_matches_this_resident(self, audio):
+    def requested_name_matches_this_resident(self, input):
         for registered_name_file in self.registered_audio_names:
-            # Try to open file
-            with wave.open(registered_name_file, 'rb') as registered_name:
-                s1 = self.s.soundex(registered_name)
-                s2 = self.s.soundex(audio)
-                if s1 == s2:
-                    return True
+            # Recognise registered name with same recogniser as parsing the input
+
+            registered_text = self.m.recognise_stored_audio(registered_name_file)
+
+            if registered_text == input:
+                return True
         return False
