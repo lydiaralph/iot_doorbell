@@ -5,10 +5,10 @@ from time import sleep
 from datetime import datetime
 import os
 from shutil import copyfile
-from Speaker import Speaker
+from doorbell.Speaker import Speaker
 # from Camera import Camera
-from Microphone import Microphone
-from Resident import Resident
+from doorbell.Microphone import MicrophoneImpl
+from doorbell.Resident import Resident
 
 import logging
 
@@ -22,13 +22,12 @@ def main():
     logging_file_name = "{}/{}".format(log_directory,logging_file_path)
     print(logging_file_name)
     logging.basicConfig(filename=logging_file_name, level=logging.DEBUG)
-    doorbell_active = False
 
     # COMPONENTS
     # doorbell_button = Button(4, pull_up=False)
     motion_sensor = MotionSensor(4)
     speaker = Speaker()
-    microphone = Microphone()
+    microphone = MicrophoneImpl()
 
     # RESIDENTS
     resident_matt = Resident('Matt', ['matt.wav', 'matthew.wav', 'mr_ralph.wav'])
@@ -58,26 +57,26 @@ def main():
                 logging.warning("Requested name was not recognised: requesting anyone to answer the door")
                 resident_anyone.request_answer_door()
 
-        except Exception:
+        # TODO: Decide what to do about exceptions.
+        except Exception as e:
             print(e)
 
         # Finished: don't want doorbell inactive if error occurs
         finally:
         # Avoid multiple triggers for same visitor
             sleep(120)
-            doorbell_active = False
 
 
 def doorbell_response(microphone, resident_recognised, residents, speaker):
     speaker.speak_resident_name()
-    resident_name_audio = microphone.listen()
+    resident_name_audio_text = microphone.recognise_speech()
     speaker.speak_visitor_name()
-    visitor_name_audio = microphone.listen()
+    visitor_name_audio_text = microphone.recognise_speech()
     for resident in residents:
-        if resident.requested_name_matches_this_resident(resident_name_audio):
+        if resident.requested_name_matches_this_resident(resident_name_audio_text):
             resident_recognised = True
             logging.info(resident.text_name, ' was requested by the visitor')
-            resident.alert_visitor_at_door(visitor_name_audio)
+            resident.alert_visitor_at_door(visitor_name_audio_text)
 
     return resident_recognised
 
