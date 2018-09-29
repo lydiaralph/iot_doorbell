@@ -14,14 +14,23 @@ class MicrophoneImpl:
         config = ConfigParser().read('../resources/doorbell.properties')
         port = config.get('USB_PORTS', 'microphone_port')
         self.m = sr.Microphone(device_index=port)
+        self.sound_samples_dir = config.get('SOUNDS', 'soundfile_residents_dir')
 
     def recognise_speech(self):
+        audio = self.capture_audio()
+        self.recognise_with_google_speech(audio)
+
+    def capture_audio(self):
         with self.m as m:
             self.r.adjust_for_ambient_noise(m)
             print("Listening for audio input...")
             audio = self.r.listen(m)
+            return audio
 
-        self.recognise_with_google_speech(audio)
+    def capture_and_persist_audio(self):
+        audio = self.capture_audio()
+        with open(self.sound_samples_dir + "/microphone-results.wav", "wb") as f:
+            f.write(audio.get_wav_data())
 
     def recognise_with_google_speech(self, audio):
         print("Now trying to translate text")
