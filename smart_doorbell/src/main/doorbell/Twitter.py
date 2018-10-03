@@ -27,11 +27,13 @@ class TwitterImpl:
 
     def get_statuses(self):
         statuses=self.api.GetUserTimeline(user_id=self.user_id)
+        # TODO: Change to log
         print([s.text for s in statuses])
 
     def post_direct_message(self, message):
         self.api.PostDirectMessage(message,user_id=self.user_id)
-        print("Successfully sent message to ", self.user_id)
+        # TODO: Change to log
+        print("Successfully sent message to Twitter user", self.user_id)
 
     def post_to_profile(self, message):
         pass
