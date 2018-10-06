@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 import soundex
-import wave
 
 from doorbell.Microphone import MicrophoneImpl
+from doorbell.Twitter import  TwitterImpl
 
 
 class Resident:
@@ -17,18 +17,19 @@ class Resident:
         # Examples: 'Matthew', 'Matt', 'Matty' 'Mr. Smith'
         self.registered_audio_names = name_sounds_file_paths
         self.text_name = text_name
+        self.t = TwitterImpl(text_name)
 
     def alert_visitor_at_door(self, visitor_name_audio):  # TODO
         if self.isAtHome:
             self.request_answer_door()
         else:
-            self.send_remote_notification()
+            self.send_remote_notification(visitor_name_audio)
 
     def request_answer_door(self):
-        pass  # TODO
+        self.t.post_direct_message(self, "Please answer the door")
 
-    def send_remote_notification(self):
-        pass  # TODO
+    def send_remote_notification(self, audio):
+        self.t.post_direct_message(self, "Somebody visited the house and left a message:" + audio)
 
     def requested_name_matches_this_resident(self, input):
         for registered_name_file in self.registered_audio_names:
