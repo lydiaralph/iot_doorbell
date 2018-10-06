@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from gpiozero import MotionSensor
+#from gpiozero import MotionSensor
 from time import sleep
 from datetime import datetime
 import os
@@ -19,7 +19,7 @@ class Doorbell:
         self.log = self.set_up_logging()
         self.residents = self.set_up_residents()
         self.microphone = MicrophoneImpl()
-        self.motion_sensor = MotionSensor(4)
+        #self.motion_sensor = MotionSensor(4)
         self.speaker = Speaker()
         print("SmartDoorbell application is ready. Logs will now be located at ", self.log.basicConfig())
 
@@ -49,6 +49,9 @@ class Doorbell:
         time_now = datetime.now().time()
         print("time: ", time_now)
         archive_log_file_path = "archive-{}-{}".format(time_now, logging_file_path)
+        if not os.path.exists(log_directory):
+            print("Creating log directory")
+            os.mkdir(log_directory)
         if os.path.exists("{}/{}".format(log_directory, logging_file_path)):
             print("Previous log file exists")
             full_path = "{}/{}".format(log_directory, logging_file_path)
@@ -58,9 +61,6 @@ class Doorbell:
             print("Finished archiving log file")
             os.remove(full_path)
             print("Finished removing old log file")
-        else:
-            print("Creating log directory")
-            os.mkdir(log_directory)
 
     def doorbell_response(self):
         self.speaker.speak_resident_name()
