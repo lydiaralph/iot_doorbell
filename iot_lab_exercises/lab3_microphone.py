@@ -13,7 +13,7 @@ r = sr.Recognizer()
 #     audio = r.listen(source)
 
 chunk = 1024
-wf = sr.AudioFile('sound_samples/harvard.wav')
+wf = sr.AudioFile('sound_samples/sf1_cln.wav')
 with wf as source:
     r.adjust_for_ambient_noise(source)
     audio = r.record(source)

@@ -9,6 +9,10 @@ import logging
 class MicrophoneImpl:
     r = sr.Recognizer()
     logger = logging.getLogger(__name__)
+    log_directory = '../logging'
+    logging_file_path = 'microphone.full.log'
+    logging_file_name = "{}/{}".format(log_directory,logging_file_path)
+    print(logging_file_name)
 
     def __init__(self, config_location):
         # Raspberry Pi needs device_index to be set: see README from link above
@@ -21,8 +25,8 @@ class MicrophoneImpl:
         logging.debug("Sound samples directory: ", self.sound_samples_dir)
         print("Sound samples directory: ", self.sound_samples_dir)
         if '${' in self.sound_samples_dir:
-            logging.error("Microphone was not configured properly")
-            raise RuntimeError("Microphone was not configured properly")
+          logging.error("Microphone was not configured properly")
+          raise RuntimeError("Microphone was not configured properly")
 
     def recognise_speech(self):
         audio = self.capture_audio()
@@ -60,10 +64,15 @@ class MicrophoneImpl:
 
 
 if __name__ == "__main__":
-    config_location = "/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/" \
+    log_directory = '../logging'
+    logging_file_path = 'microphone.full.log'
+    logging_file_name = "{}/{}".format(log_directory,logging_file_path)
+    print(logging_file_name)
+    logging.basicConfig(filename=logging_file_name, level=logging.DEBUG)
+    config_location = "/home/pi/Dev/iot_doorbell/smart_doorbell/" \
                       "src/main/resources"
     m = MicrophoneImpl(config_location)
-    # m.capture_and_persist_audio()
-    # print("Recognising")
-    # m.recognise_stored_audio(m.sound_samples_dir + "/mr_ralph.wav")
+    m.capture_and_persist_audio()
+    print("Recognising")
+    m.recognise_stored_audio(m.sounds_sample_dir + '/microphone-results.wav')
     m.recognise_speech()
