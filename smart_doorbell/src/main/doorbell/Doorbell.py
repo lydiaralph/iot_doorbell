@@ -35,10 +35,10 @@ class Doorbell:
 
     @staticmethod
     def set_up_residents():
-        resident_matt = Resident('Matt', ['matt.wav', 'matthew.wav', 'mr_ralph.wav'])
-        resident_lydia = Resident('Lydia', ['lydia.wav', 'mrs_ralph.wav'])
-        resident_anyone = Resident('Anyone', ['anyone.wav', 'idontmind.wav'])
-        residents = [resident_matt, resident_lydia, resident_anyone]
+        resident_matt = Resident('Matt', ['matt.wav', 'matthew.wav', 'mr_ralph.wav', 'matthew_ralph.wav'])
+        resident_lydia = Resident('Lydia', ['lydia.wav', 'mrs_ralph.wav', 'lydia_ralph.wav'])
+        # resident_anyone = Resident('Anyone', ['anyone.wav', 'idontmind.wav'])
+        residents = [resident_matt, resident_lydia]
         residents_list_string = ', '.join(str(x.text_name) for x in residents)
         logging.debug("Registered residents: " + residents_list_string)
         return residents
