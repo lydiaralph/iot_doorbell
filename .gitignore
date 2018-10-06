@@ -2,4 +2,6 @@
 *.idea/*
 *.log
 *pycache*
-*twitter*properties
+*twitter.properties
+*.ini
+smart_doorbell/src/main/resources/twitter.properties
