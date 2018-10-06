@@ -10,7 +10,7 @@ class TwitterImpl:
         
         config.read(config_location + '/twitter.properties')
 
-        con_key = config['APP']['twitter_consumer_api_key']
+        con_key = config('APP','twitter_consumer_api_key')
         con_sec_key = config.get('APP', 'twitter_consumer_api_secret_key')
         # TODO: Make it specific to each resident
         access_token = config.get(resident_name, 'twitter_access_token')
