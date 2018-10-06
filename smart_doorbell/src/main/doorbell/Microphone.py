@@ -19,10 +19,10 @@ class MicrophoneImpl:
         config = ConfigParser(interpolation=ExtendedInterpolation())
         config.read(config_location + '/doorbell.properties')
         port = config.get('USB_PORTS', 'microphone_port')
-        logging.debug("Microphone is on port ", port)
+        logging.debug("Microphone is on port " +  port)
         self.m = sr.Microphone(device_index=int(port))
         self.sound_samples_dir = config.get('SOUNDS', 'soundfile_residents_dir')
-        logging.debug("Sound samples directory: ", self.sound_samples_dir)
+        logging.debug("Sound samples directory: " + self.sound_samples_dir)
         print("Sound samples directory: ", self.sound_samples_dir)
         if '${' in self.sound_samples_dir:
           logging.error("Microphone was not configured properly")
@@ -49,11 +49,20 @@ class MicrophoneImpl:
     def recognise_with_google_speech(self, audio):
         logging.info("Now trying to translate text")
         try:
-            logging.info("Google Speech Recognition thinks you said \n" + self.r.recognize_google(audio))
+            logging.info("Google Speech Recognition thinks you said \n" + self.r.recognize_google(audio, language='en-GB'))
         except sr.UnknownValueError:
             logging.error("Google Speech Recognition could not understand audio")
         except sr.RequestError as e:
             logging.error("Could not request results from Google Speech Recognition service; {0}".format(e))
+
+    def sphinx_recognition(self, audio):
+        # recognize speech using Sphinx
+        try:
+            print("Sphinx thinks you said \n" + self.r.recognize_sphinx(audio))
+        except sr.UnknownValueError:
+            print("Sphinx could not understand audio")
+        except sr.RequestError as e:
+            print("Sphinx error; {0}".format(e))
 
     def recognise_stored_audio(self, audio_file_path):
         wf = sr.AudioFile(audio_file_path)
@@ -61,6 +70,7 @@ class MicrophoneImpl:
             self.r.adjust_for_ambient_noise(source)
             audio = self.r.record(source)
         self.recognise_with_google_speech(audio)
+        self.sphinx_recognition(audio)
 
 
 if __name__ == "__main__":
@@ -74,5 +84,5 @@ if __name__ == "__main__":
     m = MicrophoneImpl(config_location)
     m.capture_and_persist_audio()
     print("Recognising")
-    m.recognise_stored_audio(m.sounds_sample_dir + '/microphone-results.wav')
-    m.recognise_speech()
+    m.recognise_stored_audio(m.sound_samples_dir + '/microphone-results.wav')
+    #m.recognise_speech()
