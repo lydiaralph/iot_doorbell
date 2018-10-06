@@ -6,25 +6,44 @@ import speech_recognition as sr
 from configparser import ConfigParser, ExtendedInterpolation
 import logging
 
-class MicrophoneImpl:
-    r = sr.Recognizer()
-    logger = logging.getLogger(__name__)
-    log_directory = '../logging'
-    logging_file_path = 'microphone.full.log'
-    logging_file_name = "{}/{}".format(log_directory,logging_file_path)
-    print(logging_file_name)
 
-    def __init__(self, config_location):
+class MicrophoneImpl:
+    def __init__(self):
+        self.r = sr.Recognizer()
+        self.logger = logging.getLogger(__name__)
+        log_directory = '../logging'
+        logging_file_path = 'microphone.full.log'
+        logging_file_name = "{}/{}".format(log_directory, logging_file_path)
+        print(logging_file_name)
+
+    @classmethod
+    def with_default_config(cls):
+        config = ConfigParser(interpolation=ExtendedInterpolation()).read("../resources/doorbell.properties")
+        # Raspberry Pi needs device_index to be set: see README from link above
+        # port = config.get('USB_PORTS', 'microphone_port')
+        # logging.debug("Microphone is on port " +  port)
+        # self.m = sr.Microphone(device_index=int(port))
+        cls.m = sr.Microphone()
+        cls.sound_samples_dir = config.get('SOUNDS', 'soundfile_doorbell_dir')
+        logging.debug("Sound samples directory: " + cls.sound_samples_dir)
+        print("Sound samples directory: ", cls.sound_samples_dir)
+        if '${' in cls.sound_samples_dir:
+            logging.error("Microphone was not configured properly")
+            raise RuntimeError("Microphone was not configured properly")
+
+    @classmethod
+    def with_specified_config_location(cls, config_location):
         # Raspberry Pi needs device_index to be set: see README from link above
         config = ConfigParser(interpolation=ExtendedInterpolation())
         config.read(config_location + '/doorbell.properties')
-        port = config.get('USB_PORTS', 'microphone_port')
-        logging.debug("Microphone is on port " +  port)
-        self.m = sr.Microphone(device_index=int(port))
-        self.sound_samples_dir = config.get('SOUNDS', 'soundfile_residents_dir')
-        logging.debug("Sound samples directory: " + self.sound_samples_dir)
-        print("Sound samples directory: ", self.sound_samples_dir)
-        if '${' in self.sound_samples_dir:
+        # port = config.get('USB_PORTS', 'microphone_port')
+        # logging.debug("Microphone is on port " +  port)
+        # self.m = sr.Microphone(device_index=int(port))
+        cls.m = sr.Microphone()
+        cls.sound_samples_dir = config.get('SOUNDS', 'soundfile_doorbell_dir')
+        logging.debug("Sound samples directory: " + cls.sound_samples_dir)
+        print("Sound samples directory: ", cls.sound_samples_dir)
+        if '${' in cls.sound_samples_dir:
           logging.error("Microphone was not configured properly")
           raise RuntimeError("Microphone was not configured properly")
 
@@ -87,15 +106,14 @@ def main():
     config_location = project_location + "resources"
     log_directory = project_location + 'logging'
     logging_file_path = 'microphone.full.log'
-    logging_file_name = "{}/{}".format(log_directory,logging_file_path)
+    logging_file_name = "{}/{}".format(log_directory, logging_file_path)
     print(logging_file_name)
     logging.basicConfig(filename=logging_file_name, level=logging.DEBUG)
-
 
     m = MicrophoneImpl(config_location)
     m.capture_and_persist_audio()
     print("Recognising")
-    m.recognise_stored_audio(m.sound_samples_dir + '/microphone-results.wav')
+    # m.recognise_stored_audio(m.sound_samples_dir + '/microphone-results.wav')
     #m.recognise_speech()
 
 if __name__ == "__main__":
