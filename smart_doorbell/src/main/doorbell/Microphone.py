@@ -37,6 +37,7 @@ class MicrophoneImpl:
             self.r.adjust_for_ambient_noise(m)
             print("Listening for audio input...")
             audio = self.r.listen(m)
+            print("Heard something")
             return audio
 
     def capture_and_persist_audio(self):
@@ -47,13 +48,19 @@ class MicrophoneImpl:
         return audio
 
     def recognise_with_google_speech(self, audio):
-        logging.info("Now trying to translate text")
+        #logging.info("Now trying to translate text")
+        print("Now trying to translate text")
         try:
             logging.info("Google Speech Recognition thinks you said \n" + self.r.recognize_google(audio, language='en-GB'))
+            print("Google Speech Recognition thinks you said \n", self.r.recognize_google(audio, language='en-GB'))
         except sr.UnknownValueError:
             logging.error("Google Speech Recognition could not understand audio")
+            print("Google Speech Recognition could not understand audio")
         except sr.RequestError as e:
             logging.error("Could not request results from Google Speech Recognition service; {0}".format(e))
+            print("Could not request results from Google Speech Recognition service; {0}".format(e))
+        except Exception as e:
+            print(e)
 
     def sphinx_recognition(self, audio):
         # recognize speech using Sphinx
@@ -70,19 +77,26 @@ class MicrophoneImpl:
             self.r.adjust_for_ambient_noise(source)
             audio = self.r.record(source)
         self.recognise_with_google_speech(audio)
-        self.sphinx_recognition(audio)
+        #self.sphinx_recognition(audio)
 
 
-if __name__ == "__main__":
-    log_directory = '../logging'
+def main():
+
+    project_location = "/home/pi/Dev/iot_doorbell/smart_doorbell/" \
+                   "src/main/"
+    config_location = project_location + "resources"
+    log_directory = project_location + 'logging'
     logging_file_path = 'microphone.full.log'
     logging_file_name = "{}/{}".format(log_directory,logging_file_path)
     print(logging_file_name)
     logging.basicConfig(filename=logging_file_name, level=logging.DEBUG)
-    config_location = "/home/pi/Dev/iot_doorbell/smart_doorbell/" \
-                      "src/main/resources"
+
+
     m = MicrophoneImpl(config_location)
     m.capture_and_persist_audio()
     print("Recognising")
     m.recognise_stored_audio(m.sound_samples_dir + '/microphone-results.wav')
     #m.recognise_speech()
+
+if __name__ == "__main__":
+    main()
