@@ -28,10 +28,10 @@ class Speaker:
     def speak_record_message(self):
         self.speak_sound('soundfile_record_message')
 
-    def speak_resident_name(self):
-        self.speak_sound('soundfile_resident_name')
+    def speak_who_do_you_want_to_speak_to(self):
+        self.speak_sound('soundfile_request_name')
 
-    def speak_visitor_name(self):
+    def speak_please_say_your_name(self):
         self.speak_sound('soundfile_visitor_name')
 
     def speak_delivery(self):
@@ -39,7 +39,7 @@ class Speaker:
 
     def speak_sound(self, sound_config_property):
         try:
-            soundfile = self.config.get('SOUNDS', sound_config_property)
+            sound_file_path = self.config.get('SOUNDS', sound_config_property)
             chunk = 1024
             wf = wave.open(soundfile, 'rb')
             p = pyaudio.PyAudio()
