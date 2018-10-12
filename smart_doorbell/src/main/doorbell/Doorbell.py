@@ -65,9 +65,9 @@ class Doorbell:
             print("Finished removing old log file")
 
     def doorbell_response(self):
-        self.speaker.speak_resident_name()
+        self.speaker.speak_who_do_you_want_to_speak_to()
         resident_name_audio_text = self.microphone.recognise_speech()
-        self.speaker.speak_visitor_name()
+        self.speaker.speak_please_say_your_name()
         visitor_name_audio_text = self.microphone.recognise_speech()
         resident_recognised = False
         for resident in self.residents:

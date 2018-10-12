@@ -7,10 +7,13 @@ sudo pip3 install colour
 sudo pip3 install -U pytest
 
 # Trying to install portaudio!
-sudo apt-get install libasound-dev
-sudo apt-get install portaudio19-dev
-sudo apt-get install libportaudio2
-sudo pip3 install pyaudio
+#sudo apt-get install libasound-dev
+#sudo apt-get install portaudio19-dev
+#sudo apt-get install libportaudio2
+#sudo pip3 install pyaudio
+
+# Use instead of pyaudio
+sudo pip3 install simpleaudio
 
 sudo pip3 install SpeechRecognition==3.8.1
 sudo pip3 install soundex==1.1.3
