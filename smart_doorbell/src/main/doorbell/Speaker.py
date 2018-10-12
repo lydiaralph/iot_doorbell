@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
 
-from configparser import ConfigParser
+from configparser import ConfigParser, ExtendedInterpolation
 import pyaudio
 import wave
 
 
 class Speaker:
+    project_path = "/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/src/main"
+
+    logging.basicConfig(
+        filename='/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/src/main/logging/smart_doorbell.full.log',
+        level=logging.DEBUG)
 
     def __init__(self):
-        self.config = ConfigParser().read("../resources/doorbell.properties")
+        self.config = ConfigParser(interpolation=ExtendedInterpolation())
+        self.config.read("%s/resources/doorbell.properties" % self.project_path)
 
     def speak_hello(self):
         self.speak_sound('soundfile_hello')

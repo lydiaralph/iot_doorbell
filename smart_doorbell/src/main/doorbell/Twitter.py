@@ -4,18 +4,21 @@ from configparser import ConfigParser
 
 
 class TwitterImpl:
-    config_location = '../resources'
+    config_location = '/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/src/main/resources'
 
     def __init__(self, resident_name):
         config = ConfigParser()
         
+        config.read(self.config_location + '/twitter.' + resident_name + '.properties')
+        access_token = config.get(resident_name.upper(), 'twitter_access_token')
+        access_token_secret = config.get(resident_name.upper(), 'twitter_access_token_secret')
+
         config.read(self.config_location + '/twitter.properties')
 
-        con_key = config('APP', 'twitter_consumer_api_key')
+        con_key = config.get('APP', 'twitter_consumer_api_key')
         con_sec_key = config.get('APP', 'twitter_consumer_api_secret_key')
-        access_token = config.get(resident_name, 'twitter_access_token')
-        access_token_secret = config.get(resident_name, 'twitter_access_token_secret')
-        
+
+
         self.api = twitter.Api(consumer_key=con_key,
 		  consumer_secret=con_sec_key,
 		  access_token_key=access_token,
@@ -23,7 +26,7 @@ class TwitterImpl:
         
         self.api.VerifyCredentials()
 
-        self.user_id = config.get(resident_name, 'user_id')
+        self.user_id = config.get(resident_name.upper(), 'user_id')
 
     def get_statuses(self):
         statuses = self.api.GetUserTimeline(user_id=self.user_id)
