@@ -18,12 +18,13 @@ class Doorbell:
     project_path = "/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/src/main"
 
     def __init__(self):
-        self.log = self.set_up_logging()
+        logging_file_name = self.set_up_logging()
+        logging.basicConfig(filename=logging_file_name, level=logging.DEBUG)
         self.residents = self.set_up_residents()
         self.microphone = MicrophoneImpl()
         #self.motion_sensor = MotionSensor(4)
         self.speaker = Speaker()
-        print("SmartDoorbell application is ready. Logs will now be located at ", self.log.basicConfig())
+        print("SmartDoorbell application is ready. Logs will now be located at ", logging.basicConfig())
 
     @staticmethod
     def set_up_logging():
@@ -32,8 +33,7 @@ class Doorbell:
         Doorbell.refresh_logs(log_directory, logging_file_path)
         logging_file_name = "{}/{}".format(log_directory, logging_file_path)
         print(logging_file_name)
-        logging.basicConfig(filename=logging_file_name, level=logging.DEBUG)
-        return logging
+        return logging_file_name
 
     @staticmethod
     def set_up_residents():
@@ -60,9 +60,12 @@ class Doorbell:
             archive_path = "{}/{}".format(log_directory, archive_log_file_path)
             print("Archiving previous log file")
             copyfile(full_path, archive_path)
-            print("Finished archiving log file")
             os.remove(full_path)
-            print("Finished removing old log file")
+            print("Finished archiving log file")
+            print("Creating new log file...")
+            with open(full_path, 'a'):
+                os.utime(full_path, None)
+            print("New log file is ready to be used")
 
     def doorbell_response(self):
         print("Asking visitor to identify the resident")

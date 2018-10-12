@@ -15,9 +15,9 @@ class MicrophoneImpl:
 
     def __init__(self):
         self.r = sr.Recognizer()
-        self.logger = logging.getLogger(__name__)
-        logging_file_name = self.project_path + '/logging/microphone.full.log'
-        print(logging_file_name)
+        # self.logger = logging.getLogger(__name__)
+        logging.info("Info message")
+        logging.error("This was an error")
 
         config = ConfigParser(interpolation=ExtendedInterpolation())
         config.read("../resources/doorbell.properties")
