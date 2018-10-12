@@ -27,7 +27,7 @@ class Doorbell:
 
     @staticmethod
     def set_up_logging():
-        log_directory = '../logging'
+        log_directory = Doorbell.project_path + '/logging'
         logging_file_path = 'smart_doorbell.full.log'
         Doorbell.refresh_logs(log_directory, logging_file_path)
         logging_file_name = "{}/{}".format(log_directory, logging_file_path)
@@ -65,10 +65,18 @@ class Doorbell:
             print("Finished removing old log file")
 
     def doorbell_response(self):
+        print("Asking visitor to identify the resident")
         self.speaker.speak_who_do_you_want_to_speak_to()
         resident_name_audio_text = self.microphone.recognise_speech()
+        if resident_name_audio_text == MicrophoneImpl.UNRECOGNISED:
+            print("Resident's name was not recognised")
+            return False
+
+        print("Visitor has asked for ", resident_name_audio_text)
+        print("Asking visitor to identify themselves")
         self.speaker.speak_please_say_your_name()
         visitor_name_audio_text = self.microphone.recognise_speech()
+        print("Visitor's name seems to be ", visitor_name_audio_text)
         resident_recognised = False
         for resident in self.residents:
             if resident.requested_name_matches_this_resident(resident_name_audio_text):
@@ -84,7 +92,7 @@ def main():
 
     while True:
         #doorbell.motion_sensor.wait_for_motion()
-        sleep(10)
+        # sleep(10)
         try:
             logging.info("Somebody is at the door")
             doorbell.speaker.speak_hello()
@@ -105,6 +113,7 @@ def main():
         # TODO: Decide what to do about exceptions.
         except Exception as e:
             print(e)
+            logging.debug(e)
 
         # Finished: don't want doorbell inactive if error occurs
         finally:

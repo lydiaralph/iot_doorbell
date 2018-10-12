@@ -3,7 +3,7 @@
 import soundex
 
 from doorbell.Microphone import MicrophoneImpl
-from doorbell.Twitter import  TwitterImpl
+from doorbell.Twitter import TwitterImpl
 
 
 class Resident:
@@ -32,6 +32,7 @@ class Resident:
         self.t.post_direct_message(self, "Somebody visited the house and left a message:" + audio)
 
     def requested_name_matches_this_resident(self, input):
+        print("Trying to match audio against resident ", self.text_name)
         for registered_name_file in self.registered_audio_names:
             # Recognise registered name with same recogniser as parsing the input
 
