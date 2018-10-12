@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
+import logging
 from configparser import ConfigParser, ExtendedInterpolation
-import pyaudio
-import wave
+
+import simpleaudio as sa
 
 
 class Speaker:
@@ -38,26 +39,8 @@ class Speaker:
         self.speak_sound('soundfile_delivery')
 
     def speak_sound(self, sound_config_property):
-        try:
-            sound_file_path = self.config.get('SOUNDS', sound_config_property)
-            chunk = 1024
-            wf = wave.open(soundfile, 'rb')
-            p = pyaudio.PyAudio()
-
-            stream = p.open(
-                format=p.get_format_from_width(wf.getsampwidth()),
-                channels=wf.getnchannels(),
-                rate=wf.getframerate(),
-                output=True)
-
-            data = wf.readframes(chunk)
-
-            while data != '':
-                stream.write(data)
-                data = wf.readframes(chunk)
-
-            stream.close()
-            p.terminate()
-
-        except IOError:
-            print("ERROR: Couldn't open sound file {}", sound_config_property)
+        logging.debug("Speaking sound " + sound_config_property)
+        sound_file_path = self.config.get('SOUNDS', sound_config_property)
+        wave_obj = sa.WaveObject.from_wave_file(sound_file_path)
+        play_obj = wave_obj.play()
+        play_obj.wait_done()
