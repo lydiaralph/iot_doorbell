@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from picamera import PiCamera
-from configparser import ConfigParser
+from configparser import ConfigParser, ExtendedInterpolation
 
 from time import sleep
 from colour import Color
@@ -16,7 +16,7 @@ class Camera(PiCamera):
     videos_dir = ""
 
     def __init__(self):
-        config = ConfigParser().read('../resources/doorbell.properties')
+        config = ConfigParser(interpolation=ExtendedInterpolation()).read('../resources/doorbell.properties')
 
         # Default location: current directory
         self.snapshots_dir = config.get('CAMERA', 'snapshots_dir',

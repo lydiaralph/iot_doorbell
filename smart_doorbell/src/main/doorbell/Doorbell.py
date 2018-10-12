@@ -15,6 +15,8 @@ import logging
 
 class Doorbell:
 
+    project_path = "/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/src/main"
+
     def __init__(self):
         self.log = self.set_up_logging()
         self.residents = self.set_up_residents()
