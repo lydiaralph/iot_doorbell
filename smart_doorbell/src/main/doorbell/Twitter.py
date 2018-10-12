@@ -34,7 +34,7 @@ class TwitterImpl:
         print([s.text for s in statuses])
 
     def post_direct_message(self, message):
-        self.api.PostDirectMessage(message, user_id=self.user_id)
+        self.api.PostDirectMessage(text=message, user_id=self.user_id)
         # TODO: Change to log
         print("Successfully sent message to Twitter user", self.user_id)
 
