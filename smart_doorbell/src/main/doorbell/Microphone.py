@@ -134,7 +134,7 @@ def main():
     print(logging_file_name)
     logging.basicConfig(filename=logging_file_name, level=logging.DEBUG)
 
-    m = MicrophoneImpl(config_location)
+    m = MicrophoneImpl()
     m.capture_and_persist_audio()
     print("Recognising")
     # m.recognise_stored_audio(m.sound_samples_dir + '/microphone-results.wav')
