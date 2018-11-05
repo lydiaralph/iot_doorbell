@@ -20,7 +20,7 @@ class MicrophoneImpl:
         logging.error("This was an error")
 
         config = ConfigParser(interpolation=ExtendedInterpolation())
-        config.read("../resources/doorbell.properties")
+        config.read(self.project_path + "/resources/doorbell.properties")
         # Raspberry Pi needs device_index to be set: see README from link above
         # port = config.get('USB_PORTS', 'microphone_port')
         # logging.debug("Microphone is on port " +  port)

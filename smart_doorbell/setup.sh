@@ -25,3 +25,4 @@ sudo pip3 install twitter
 sudo pip3 install https://github.com/bear/python-twitter/archive/v3.5.tar.gz
 
 
+pip3 install mock

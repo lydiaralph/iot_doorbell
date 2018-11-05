@@ -3,24 +3,23 @@
 import soundex
 
 from doorbell.Microphone import MicrophoneImpl
-from doorbell.Twitter import TwitterImpl
 
 
 class Resident:
 
-    isAtHome = False
+    is_at_home = False
     s = soundex.getInstance()
     m = MicrophoneImpl()
 
-    def __init__(self, text_name, name_sounds_file_paths):
+    def __init__(self, text_name, name_sounds_file_paths, twitter_impl):
         # A list of sound files containing pronunciations of this resident's name
         # Examples: 'Matthew', 'Matt', 'Matty' 'Mr. Smith'
         self.registered_audio_names = name_sounds_file_paths
         self.text_name = text_name
-        self.t = TwitterImpl(text_name)
+        self.t = twitter_impl
 
-    def alert_visitor_at_door(self, visitor_name_audio):  # TODO
-        if self.isAtHome:
+    def alert_visitor_at_door(self, visitor_name_audio):
+        if self.is_at_home:
             self.request_answer_door()
         else:
             self.send_remote_notification(visitor_name_audio)
@@ -29,15 +28,18 @@ class Resident:
         self.t.post_direct_message("Please answer the door")
 
     def send_remote_notification(self, audio):
-        self.t.post_direct_message("Somebody visited the house and left a message:" + audio)
+        self.t.post_direct_message("Somebody visited the house and left a message: " + audio)
 
-    def requested_name_matches_this_resident(self, input):
+    def requested_name_matches_this_resident(self, input_audio):
         print("Trying to match audio against resident ", self.text_name)
         for registered_name_file in self.registered_audio_names:
             # Recognise registered name with same recogniser as parsing the input
 
             registered_text = self.m.recognise_stored_audio(registered_name_file)
 
-            if registered_text == input:
+            if registered_text == input_audio:
                 return True
         return False
+
+    def set_resident_at_home(self, at_home):
+        self.is_at_home = at_home
