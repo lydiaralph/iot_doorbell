@@ -11,7 +11,7 @@ from doorbell import Resident, Microphone
 from doorbell.test.utils.MockTwitter import MockTwitter
 
 
-class ResidentTest(unittest.TestCase):
+class TestResident(unittest.TestCase):
 
     def setUp(self):
         mock_microphone = Microphone.MicrophoneImpl

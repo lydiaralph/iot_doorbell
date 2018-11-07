@@ -10,7 +10,7 @@ from unittest.mock import MagicMock
 from doorbell import Speaker
 
 
-class SpeakerTest(unittest.TestCase):
+class TestSpeaker(unittest.TestCase):
 
     def setUp(self):
         self.under_test = Speaker.Speaker()

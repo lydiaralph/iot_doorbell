@@ -7,7 +7,7 @@ except ImportError:
     import unittest
 
 
-class TwitterTest(unittest.TestCase):
+class TestTwitter(unittest.TestCase):
 
     def setUp(self):
         self.under_test = MockTwitter('test_user_id')

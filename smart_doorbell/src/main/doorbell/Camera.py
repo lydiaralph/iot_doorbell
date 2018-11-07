@@ -16,13 +16,13 @@ class Camera(PiCamera):
     videos_dir = ""
 
     def __init__(self):
-        config = ConfigParser(interpolation=ExtendedInterpolation()).read('../resources/doorbell.properties')
+        project_path = "/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/src/main"
+        config = ConfigParser(interpolation=ExtendedInterpolation())
+        config.read("%s/resources/doorbell.properties" % project_path)
 
         # Default location: current directory
-        self.snapshots_dir = config.get('CAMERA', 'snapshots_dir',
-                                   fallback='')
-        self.video_dir = config.get('CAMERA', 'videos_dir',
-                               fallback='')
+        self.snapshots_dir = config.get('CAMERA', 'snapshots_dir', fallback='')
+        self.video_dir = config.get('CAMERA', 'videos_dir', fallback='')
 
         self.annotate_text = None
         self.annotate_text_size = 50

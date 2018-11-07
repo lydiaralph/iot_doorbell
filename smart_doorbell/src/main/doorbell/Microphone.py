@@ -118,7 +118,6 @@ class MicrophoneImpl:
             self.r.adjust_for_ambient_noise(source)
             audio = self.r.record(source)
         self.recognise_with_google_speech(audio)
-        #self.sphinx_recognition(audio)
 
 
 def main():
