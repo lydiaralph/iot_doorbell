@@ -38,6 +38,8 @@ class TwitterImpl:
         print("Successfully sent message to Twitter user", self.user_id)
 
     def post_to_profile(self, message):
+        # TODO: Change to log
+        print("Method 'post_to_profile' not supported")
         pass
 
 

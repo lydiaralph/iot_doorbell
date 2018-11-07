@@ -16,8 +16,6 @@ class MicrophoneImpl:
     def __init__(self):
         self.r = sr.Recognizer()
         # self.logger = logging.getLogger(__name__)
-        logging.info("Info message")
-        logging.error("This was an error")
 
         config = ConfigParser(interpolation=ExtendedInterpolation())
         config.read(self.project_path + "/resources/doorbell.properties")
@@ -26,6 +24,7 @@ class MicrophoneImpl:
         # logging.debug("Microphone is on port " +  port)
         # self.m = sr.Microphone(device_index=int(port))
         self.m = sr.Microphone()
+
         self.sound_samples_dir = config.get('SOUNDS', 'soundfile_doorbell_dir')
         logging.debug("Sound samples directory: " + self.sound_samples_dir)
         print("Sound samples directory: ", self.sound_samples_dir)
@@ -69,7 +68,6 @@ class MicrophoneImpl:
         audio = self.capture_audio()
         return self.recognise_with_google_speech(audio)
 
-    # TODO: Add timeout
     def capture_audio(self):
         with self.m as m:
             self.r.adjust_for_ambient_noise(m)
