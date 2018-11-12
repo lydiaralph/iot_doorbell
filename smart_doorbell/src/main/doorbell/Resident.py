@@ -27,8 +27,13 @@ class Resident:
     def request_answer_door(self):
         self.t.post_direct_message("Please answer the door")
 
-    def send_remote_notification(self, audio):
-        self.t.post_direct_message("Somebody visited the house and left a message: " + audio)
+    def send_remote_notification(self, visitor_name_audio_text, recorded_message_audio_file_path=None):
+        if visitor_name_audio_text is not None:
+            self.t.post_direct_message("{} visited the house and left a message: ".format(visitor_name_audio_text),
+                                       recorded_message_audio_file_path)
+        else:
+            self.t.post_direct_message("Somebody visited the house and left a message: ",
+                                       recorded_message_audio_file_path)
 
     def requested_name_matches_this_resident(self, input_audio):
         print("Trying to match audio against resident ", self.text_name)

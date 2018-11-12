@@ -37,6 +37,14 @@ class TwitterImpl:
         # TODO: Change to log
         print("Successfully sent message to Twitter user", self.user_id)
 
+    def post_direct_message_with_image(self, message, image_path):
+        if image_path is None:
+            self.api.PostDirectMessage(self, message)
+        else:
+            self.api.PostDirectMessage(text=message, user_id=self.user_id, media_file_path=image_path, media_type='dm_image')
+        # TODO: Change to log
+        print("Successfully sent message to Twitter user", self.user_id)
+
     def post_to_profile(self, message):
         # TODO: Change to log
         print("Method 'post_to_profile' not supported")
