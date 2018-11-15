@@ -33,7 +33,9 @@ class Camera(PiCamera):
         try:
             current_time = datetime.datetime.now()
             self.generic_camera_preparation(current_time)
-            self.capture(self.snapshots_dir + current_time + '.jpg')  # time instead of 'image'
+            image_filepath = self.snapshots_dir + current_time + '.jpg'
+            self.capture(image_filepath)
+            return image_filepath
         finally:
             self.stop_preview()
             self.close()

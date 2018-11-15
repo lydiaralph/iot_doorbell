@@ -94,25 +94,16 @@ class Doorbell:
                     resident.alert_visitor_at_door(visitor_name_audio_text)
                 else:
                     # TODO: Look at combining audio and video into a sound video
-                    self.send_recorded_audio_message_to_resident(resident, visitor_name_audio_text)
-                    self.send_captured_image_to_resident(resident, visitor_name_audio_text)
+                    self.speaker.speak_record_message()
+                    recorded_message_text = self.microphone.recognise_speech()
+                    self.speaker.speak_capture_picture()
+                    captured_image = self.camera.capture_still()
+
+                    resident.send_remote_notification(visitor_name_audio_text,
+                                                      recorded_message_text,
+                                                      captured_image)
 
         return resident_recognised
-
-    def send_captured_image_to_resident(self, resident, visitor_name_audio_text):
-        self.speaker.speak_capture_picture()
-        captured_image = self.camera.capture_still()
-        resident.send_remote_notification("Captured image of visitor {}".format(visitor_name_audio_text),
-                                          captured_image)
-
-    def send_recorded_audio_message_to_resident(self, resident, visitor_name_audio_text):
-        self.speaker.speak_record_message()
-        recorded_message = self.microphone.capture_audio()
-        if visitor_name_audio_text is not None:
-            tweet_message = "{} visited the house and left a message: ".format(visitor_name_audio_text)
-        else:
-            tweet_message = "Somebody visited the house and left a message: "
-        resident.send_remote_notification(tweet_message, recorded_message)
 
 
 def main():
