@@ -2,7 +2,7 @@
 
 import soundex
 
-from doorbell.Microphone import MicrophoneImpl
+from Microphone import MicrophoneImpl
 
 
 class Resident:

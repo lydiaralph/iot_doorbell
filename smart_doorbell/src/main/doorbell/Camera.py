@@ -16,9 +16,9 @@ class Camera(PiCamera):
     videos_dir = ""
 
     def __init__(self):
-        project_path = "/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/src/main"
+        #project_path = "/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/src/main"
         config = ConfigParser(interpolation=ExtendedInterpolation())
-        config.read("%s/resources/doorbell.properties" % project_path)
+        config.read("../resources/doorbell.properties")
 
         # Default location: current directory
         self.snapshots_dir = config.get('CAMERA', 'snapshots_dir', fallback='')

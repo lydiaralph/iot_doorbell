@@ -5,13 +5,17 @@ from configparser import ConfigParser
 
 class TwitterImpl:
 
-    project_path = "/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/src/main"
+    # project_path = "/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/src/main"
 
     def __init__(self, resident_name):
         config = ConfigParser()
         
-        config.read(self.project_path + '/resources/twitter.properties')
-        config.read(self.project_path + '/resources/twitter.' + resident_name + '.properties')
+        #config.read(self.project_path + '/resources/twitter.properties')
+        #config.read(self.project_path + '/resources/twitter.' + resident_name + '.properties')
+
+        config.read('../resources/twitter.properties')
+        config.read('../resources/twitter.' + resident_name + '.properties')
+
 
         access_token = config.get(resident_name.upper(), 'twitter_access_token')
         access_token_secret = config.get(resident_name.upper(), 'twitter_access_token_secret')

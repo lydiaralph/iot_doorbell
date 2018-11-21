@@ -5,32 +5,32 @@ from time import sleep
 from datetime import datetime
 import os
 from shutil import copyfile
-from doorbell.Speaker import Speaker
+from Speaker import Speaker
 # from Camera import Camera
-from doorbell.Microphone import MicrophoneImpl
-from doorbell.Resident import Resident
+from Microphone import MicrophoneImpl
+from Resident import Resident
 
 import logging
 
-from doorbell.Twitter import TwitterImpl
+from Twitter import TwitterImpl
 
 
 class Doorbell:
 
-    project_path = "/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/src/main"
+    #project_path = "/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/src/main"
 
     def __init__(self):
         logging_file_name = self.set_up_logging()
         logging.basicConfig(filename=logging_file_name, level=logging.DEBUG)
         self.residents = self.set_up_residents()
         self.microphone = MicrophoneImpl()
-        #self.motion_sensor = MotionSensor(4)
+        self.motion_sensor = MotionSensor(14)
         self.speaker = Speaker()
         print("SmartDoorbell application is ready. Logs will now be located at ", logging.basicConfig())
 
     @staticmethod
     def set_up_logging():
-        log_directory = Doorbell.project_path + '/logging'
+        log_directory = '../logging'
         logging_file_path = 'smart_doorbell.full.log'
         Doorbell.refresh_logs(log_directory, logging_file_path)
         logging_file_name = "{}/{}".format(log_directory, logging_file_path)
@@ -93,7 +93,6 @@ class Doorbell:
                 if resident.is_at_home:
                     resident.alert_visitor_at_door(visitor_name_audio_text)
                 else:
-                    # TODO: Look at combining audio and video into a sound video
                     self.speaker.speak_record_message()
                     recorded_message_text = self.microphone.recognise_speech()
                     self.speaker.speak_capture_picture()
@@ -107,11 +106,11 @@ class Doorbell:
 
 
 def main():
-    doorbell = Doorbell()
-
+    d = Doorbell()
+    
+    print("SmartDoorbell application is ready. Logs will now be located at ", d.logging_file_name)
     while True:
-        #doorbell.motion_sensor.wait_for_motion()
-        # sleep(10)
+        motion_sensor.wait_for_motion()
         try:
             logging.info("Somebody is at the door")
             doorbell.speaker.speak_hello()

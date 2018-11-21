@@ -11,14 +11,15 @@ class MicrophoneImpl:
 
     UNRECOGNISED = "Audio was not understood by speech recognition software"
 
-    project_path = "/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/src/main"
+    #project_path = "/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/src/main"
 
     def __init__(self):
         self.r = sr.Recognizer()
         # self.logger = logging.getLogger(__name__)
 
         config = ConfigParser(interpolation=ExtendedInterpolation())
-        config.read(self.project_path + "/resources/doorbell.properties")
+        #config.read(self.project_path + "/resources/doorbell.properties")
+        config.read("../resources/doorbell.properties")
         # Raspberry Pi needs device_index to be set: see README from link above
         # port = config.get('USB_PORTS', 'microphone_port')
         # logging.debug("Microphone is on port " +  port)
