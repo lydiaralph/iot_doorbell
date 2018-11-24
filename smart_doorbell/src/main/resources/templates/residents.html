@@ -1,0 +1,15 @@
+<html>
+<head>
+    List of residents registered with SmartDoorbell application.
+</head>
+<body>
+    {% for resident in residents %}
+        <p>{{ resident.text_name }}: {{ resident.is_at_home }}
+        <label class="switch" ontoggle="set_resident_at_home()">
+            <input type="checkbox" checked>
+            <span class="slider round"></span>
+        </label>
+        </p>
+    {% endfor %}
+</body>
+</html>

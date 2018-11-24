@@ -50,3 +50,6 @@ class Resident:
 
     def set_resident_at_home(self, at_home):
         self.is_at_home = at_home
+
+    def get_resident_at_home(self):
+        return self.is_at_home
