@@ -2,19 +2,19 @@
 
 import soundex
 
-from doorbell.Microphone import MicrophoneImpl
+from Microphone import SpeechRecogniser
 
 
 class Resident:
 
     is_at_home = False
     s = soundex.getInstance()
-    m = MicrophoneImpl()
+    dictophone = SpeechRecogniser()
 
-    def __init__(self, text_name, name_sounds_file_paths, twitter_impl):
+    def __init__(self, text_name, registered_names, twitter_impl):
         # A list of sound files containing pronunciations of this resident's name
         # Examples: 'Matthew', 'Matt', 'Matty' 'Mr. Smith'
-        self.registered_audio_names = name_sounds_file_paths
+        self.registered_names = registered_names
         self.text_name = text_name
         self.t = twitter_impl
 
@@ -31,21 +31,19 @@ class Resident:
                                  recorded_message_audio_text='(blank)',
                                  image_file_path=None):
 
-        if visitor_name_audio_text is self.m.UNRECOGNISED:
+        if visitor_name_audio_text is self.dictophone.UNRECOGNISED:
             visitor_name_audio_text = "Somebody"
 
         message__format = "{} visited the house and left a message: {}"\
             .format(visitor_name_audio_text, recorded_message_audio_text)
         self.t.post_direct_message(message__format, image_file_path)
 
-    def requested_name_matches_this_resident(self, input_audio):
+
+    def requested_name_matches_this_resident(self, requested_name_text):
         print("Trying to match audio against resident ", self.text_name)
-        for registered_name_file in self.registered_audio_names:
-            # Recognise registered name with same recogniser as parsing the input
-
-            registered_text = self.m.recognise_stored_audio(registered_name_file)
-
-            if registered_text == input_audio:
+        stripped = requested_name_text.lower().replace(" ", "")
+        for registered_name in self.registered_names:
+            if registered_name.lower().replace(" ", "") == stripped:
                 return True
         return False
 

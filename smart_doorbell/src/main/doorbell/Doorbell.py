@@ -1,36 +1,38 @@
 #!/usr/bin/env python3
 
-#from gpiozero import MotionSensor
+from gpiozero import MotionSensor
 from time import sleep
 from datetime import datetime
 import os
 from shutil import copyfile
-from doorbell.Speaker import Speaker
-# from Camera import Camera
-from doorbell.Microphone import MicrophoneImpl
-from doorbell.Resident import Resident
+from Speaker import Speaker
+from Camera import Camera
+from Microphone import SpeechRecogniser, AudioCapture
+from Resident import Resident
 
 import logging
 
-from doorbell.Twitter import TwitterImpl
+from Twitter import TwitterImpl
 
 
 class Doorbell:
 
-    project_path = "/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/src/main"
+    #project_path = "/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/src/main"
 
     def __init__(self):
         logging_file_name = self.set_up_logging()
         logging.basicConfig(filename=logging_file_name, level=logging.DEBUG)
         self.residents = self.set_up_residents()
-        self.microphone = MicrophoneImpl()
-        #self.motion_sensor = MotionSensor(4)
+        self.microphone = AudioCapture()
+        self.dictophone = SpeechRecogniser()
+        self.motion_sensor = MotionSensor(4)
+        self.camera = Camera()
         self.speaker = Speaker()
         print("SmartDoorbell application is ready. Logs will now be located at ", logging.basicConfig())
 
     @staticmethod
     def set_up_logging():
-        log_directory = Doorbell.project_path + '/logging'
+        log_directory = '../logging'
         logging_file_path = 'smart_doorbell.full.log'
         Doorbell.refresh_logs(log_directory, logging_file_path)
         logging_file_name = "{}/{}".format(log_directory, logging_file_path)
@@ -39,8 +41,8 @@ class Doorbell:
 
     @staticmethod
     def set_up_residents():
-        resident_matt = Resident('Matt', ['matt.wav', 'matthew.wav', 'mr_ralph.wav', 'matthew_ralph.wav'], TwitterImpl('matt'))
-        resident_lydia = Resident('Lydia', ['lydia.wav', 'mrs_ralph.wav', 'lydia_ralph.wav'], TwitterImpl('lydia'))
+        resident_matt = Resident('Matt', ['matt', 'matthew', 'mr ralph', 'matthew ralph'], TwitterImpl('matt'))
+        resident_lydia = Resident('Lydia', ['lydia', 'mrs ralph', 'lydia ralph'], TwitterImpl('lydia'))
         # resident_anyone = Resident('Anyone', ['anyone.wav', 'idontmind.wav'])
         residents = [resident_matt, resident_lydia]
         residents_list_string = ', '.join(str(x.text_name) for x in residents)
@@ -74,28 +76,30 @@ class Doorbell:
     def doorbell_response(self):
         print("Asking visitor to identify the resident")
         self.speaker.speak_who_do_you_want_to_speak_to()
-        resident_name_audio_text = self.microphone.recognise_speech()
-        if resident_name_audio_text == MicrophoneImpl.UNRECOGNISED:
+        resident_name_audio = self.microphone.capture_and_persist_audio('resident-name')
+        resident_name_audio_text = self.dictophone.recognise_speech(resident_name_audio)
+        if resident_name_audio_text == self.dictophone.UNRECOGNISED:
             print("Resident's name was not recognised")
             return False
 
         print("Visitor has asked for ", resident_name_audio_text)
         print("Asking visitor to identify themselves")
         self.speaker.speak_please_say_your_name()
-        visitor_name_audio_text = self.microphone.recognise_speech()
+        visitor_name_audio = self.microphone.capture_and_persist_audio('visitor-name')
+        visitor_name_audio_text = self.dictophone.recognise_speech(visitor_name_audio)
         print("Visitor's name seems to be ", visitor_name_audio_text)
         resident_recognised = False
         for resident in self.residents:
             if resident.requested_name_matches_this_resident(resident_name_audio_text):
                 resident_recognised = True
-                logging.info(resident.text_name, ' was requested by the visitor')
+                print(resident.text_name, ' was requested by the visitor')
 
                 if resident.is_at_home:
-                    resident.alert_visitor_at_door(visitor_name_audio_text)
+                    resident.request_answer_door(visitor_name_audio_text)
                 else:
-                    # TODO: Look at combining audio and video into a sound video
                     self.speaker.speak_record_message()
-                    recorded_message_text = self.microphone.recognise_speech()
+                    recorded_message_text_audio = self.microphone.capture_and_persist_audio('message')
+                    recorded_message_text = self.dictophone.recognise_speech(recorded_message_text_audio)
                     self.speaker.speak_capture_picture()
                     captured_image = self.camera.capture_still()
 
@@ -108,24 +112,24 @@ class Doorbell:
 
 def main():
     doorbell = Doorbell()
-
+    
     while True:
-        #doorbell.motion_sensor.wait_for_motion()
-        # sleep(10)
+        print("Checking the door...")
+        doorbell.motion_sensor.wait_for_motion()
         try:
-            logging.info("Somebody is at the door")
+            print("Somebody is at the door")
             doorbell.speaker.speak_hello()
             resident_recognised = doorbell.doorbell_response()
 
             # Try again
             if not resident_recognised:
-                logging.warning("Requested name was not recognised: trying again")
+                print("Requested name was not recognised: trying again")
                 doorbell.speaker.speak_not_recognised()
                 resident_recognised = doorbell.doorbell_response()
 
             # Default: alert everyone
             if not resident_recognised:
-                logging.warning("Requested name was not recognised: sending general alert")
+                print("Requested name was not recognised: sending general alert")
                 for resident in doorbell.residents:
                     resident.request_answer_door()
 
@@ -137,7 +141,7 @@ def main():
         # Finished: don't want doorbell inactive if error occurs
         finally:
             # Avoid multiple triggers for same visitor
-            sleep(120)
+            sleep(60)
 
 
 if __name__ == "__main__":
