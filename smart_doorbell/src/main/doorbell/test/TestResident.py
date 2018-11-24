@@ -7,21 +7,22 @@ except ImportError:
 
 from unittest.mock import MagicMock
 
-from doorbell import Resident, Microphone
+from doorbell import Resident
+from doorbell.Microphone import SpeechRecogniser
 from doorbell.test.utils.MockTwitter import MockTwitter
 
 
 class TestResident(unittest.TestCase):
 
     def setUp(self):
-        mock_microphone = Microphone.MicrophoneImpl
+        mock_microphone = SpeechRecogniser
         mock_microphone.__init__ = MagicMock()
         mock_microphone.recognise_stored_audio = MagicMock()
 
         self.mock_twitter = MockTwitter('test')
         self.mock_twitter.post_direct_message = MagicMock()
         self.under_test = Resident.Resident('Test name', ['../resources/test.wav'], self.mock_twitter)
-        self.under_test.m = mock_microphone
+        self.under_test.dictophone = mock_microphone
 
     def test_basic_resident_setup(self):
         assert self.under_test.text_name == 'Test name'
@@ -31,13 +32,13 @@ class TestResident(unittest.TestCase):
     def test_alert_visitor_at_door_resident_not_at_home(self):
         # When
         self.under_test.is_at_home = False
-        self.under_test.alert_visitor_at_door("hannah")
+        self.under_test.alert_visitor_at_door("Hannah")
         # Then
         self.under_test.t.post_direct_message.assert_called_once()
         self.under_test.t.post_direct_message\
-            .assert_called_once_with("Somebody visited the house and left a message: hannah")
+            .assert_called_once_with("Hannah visited the house and left a message: (blank)", None)
 
-    def test_alert_visitor_at_door_resient_at_home(self):
+    def test_alert_visitor_at_door_resident_at_home(self):
         # When
         self.under_test.is_at_home = True
         self.under_test.alert_visitor_at_door("hannah")
@@ -64,8 +65,8 @@ class TestResident(unittest.TestCase):
             self.under_test.requested_name_matches_this_resident("audio")
         # Then
         except IsADirectoryError or TypeError:
-            self.under_test.m.recognise_stored_audio.assert_called_once()
-            self.under_test.m.recognise_stored_audio.assert_called_once_with("../resources/test.wav")
+            self.under_test.dictophone.recognise_stored_audio.assert_called_once()
+            self.under_test.dictophone.recognise_stored_audio.assert_called_once_with("../resources/test.wav")
 
 
 if __name__ == 'main':

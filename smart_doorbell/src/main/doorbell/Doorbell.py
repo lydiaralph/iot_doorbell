@@ -7,7 +7,7 @@ import os
 from shutil import copyfile
 from Speaker import Speaker
 # from Camera import Camera
-from Microphone import MicrophoneImpl
+from Microphone import SpeechRecogniser, AudioCapture
 from Resident import Resident
 
 import logging
@@ -23,7 +23,8 @@ class Doorbell:
         logging_file_name = self.set_up_logging()
         logging.basicConfig(filename=logging_file_name, level=logging.DEBUG)
         self.residents = self.set_up_residents()
-        self.microphone = MicrophoneImpl()
+        self.microphone = AudioCapture()
+        self.dictophone = SpeechRecogniser()
         self.motion_sensor = MotionSensor(14)
         self.speaker = Speaker()
         print("SmartDoorbell application is ready. Logs will now be located at ", logging.basicConfig())
@@ -74,15 +75,17 @@ class Doorbell:
     def doorbell_response(self):
         print("Asking visitor to identify the resident")
         self.speaker.speak_who_do_you_want_to_speak_to()
-        resident_name_audio_text = self.microphone.recognise_speech()
-        if resident_name_audio_text == MicrophoneImpl.UNRECOGNISED:
+        resident_name_audio = self.microphone.capture_audio()
+        resident_name_audio_text = self.dictophone.recognise_speech(resident_name_audio)
+        if resident_name_audio_text == self.dictophone.UNRECOGNISED:
             print("Resident's name was not recognised")
             return False
 
         print("Visitor has asked for ", resident_name_audio_text)
         print("Asking visitor to identify themselves")
         self.speaker.speak_please_say_your_name()
-        visitor_name_audio_text = self.microphone.recognise_speech()
+        visitor_name_audio = self.microphone.capture_audio()
+        visitor_name_audio_text = self.dictophone.recognise_speech(visitor_name_audio)
         print("Visitor's name seems to be ", visitor_name_audio_text)
         resident_recognised = False
         for resident in self.residents:
@@ -91,10 +94,11 @@ class Doorbell:
                 logging.info(resident.text_name, ' was requested by the visitor')
 
                 if resident.is_at_home:
-                    resident.alert_visitor_at_door(visitor_name_audio_text)
+                    resident.request_answer_door(visitor_name_audio_text)
                 else:
                     self.speaker.speak_record_message()
-                    recorded_message_text = self.microphone.recognise_speech()
+                    recorded_message_text_audio = self.microphone.capture_audio()
+                    recorded_message_text = self.dictophone.recognise_speech(recorded_message_text_audio)
                     self.speaker.speak_capture_picture()
                     captured_image = self.camera.capture_still()
 
@@ -106,7 +110,7 @@ class Doorbell:
 
 
 def main():
-    d = Doorbell()
+    doorbell = Doorbell()
     
     print("SmartDoorbell application is ready. Logs will now be located at ", d.logging_file_name)
     while True:

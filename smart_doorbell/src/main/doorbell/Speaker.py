@@ -10,12 +10,12 @@ class Speaker:
     #project_path = "/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/src/main"
 
     logging.basicConfig(
-        filename='../logging/smart_doorbell.full.log',
+        filename='../../logging/smart_doorbell.full.log',
         level=logging.DEBUG)
 
     def __init__(self):
         self.config = ConfigParser(interpolation=ExtendedInterpolation())
-        self.config.read("../resources/doorbell.properties")
+        self.config.read("../../resources/doorbell.properties")
 
     def speak_hello(self):
         self.speak_sound('soundfile_hello')

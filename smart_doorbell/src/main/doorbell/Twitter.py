@@ -16,7 +16,6 @@ class TwitterImpl:
         config.read('../resources/twitter.properties')
         config.read('../resources/twitter.' + resident_name + '.properties')
 
-
         access_token = config.get(resident_name.upper(), 'twitter_access_token')
         access_token_secret = config.get(resident_name.upper(), 'twitter_access_token_secret')
         con_key = config.get('APP', 'twitter_consumer_api_key')

@@ -2,14 +2,14 @@
 
 import soundex
 
-from Microphone import MicrophoneImpl
+from doorbell.Microphone import SpeechRecogniser
 
 
 class Resident:
 
     is_at_home = False
     s = soundex.getInstance()
-    m = MicrophoneImpl()
+    dictophone = SpeechRecogniser()
 
     def __init__(self, text_name, name_sounds_file_paths, twitter_impl):
         # A list of sound files containing pronunciations of this resident's name
@@ -31,7 +31,7 @@ class Resident:
                                  recorded_message_audio_text='(blank)',
                                  image_file_path=None):
 
-        if visitor_name_audio_text is self.m.UNRECOGNISED:
+        if visitor_name_audio_text is self.dictophone.UNRECOGNISED:
             visitor_name_audio_text = "Somebody"
 
         message__format = "{} visited the house and left a message: {}"\
@@ -42,8 +42,7 @@ class Resident:
         print("Trying to match audio against resident ", self.text_name)
         for registered_name_file in self.registered_audio_names:
             # Recognise registered name with same recogniser as parsing the input
-
-            registered_text = self.m.recognise_stored_audio(registered_name_file)
+            registered_text = self.dictophone.recognise_stored_audio(registered_name_file)
 
             if registered_text == input_audio:
                 return True
