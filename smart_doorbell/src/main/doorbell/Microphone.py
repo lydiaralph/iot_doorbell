@@ -8,38 +8,38 @@ import logging
 
 
 class AudioCapture:
-    project_path = "/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/src/main"
 
     def __init__(self):
         self.r = sr.Recognizer()
 
         config = ConfigParser(interpolation=ExtendedInterpolation())
-        config.read(self.project_path + "/resources/doorbell.properties")
+        config.read("../resources/doorbell.properties")
         # Raspberry Pi needs device_index to be set: see README from link above
-        # port = config.get('USB_PORTS', 'microphone_port')
-        # logging.debug("Microphone is on port " +  port)
-        # self.m = sr.Microphone(device_index=int(port))
-        self.m = sr.Microphone()
+        port = config.get('USB_PORTS', 'microphone_port')
+        logging.debug("Microphone is on port " +  port)
+        self.m = sr.Microphone(device_index=int(port))
+        # self.m = sr.Microphone()
 
-        self.sound_samples_dir = config.get('SOUNDS', 'soundfile_doorbell_dir')
-        logging.debug("Sound samples directory: " + self.sound_samples_dir)
-        print("Sound samples directory: ", self.sound_samples_dir)
-        if '${' in self.sound_samples_dir:
+        self.captured_sounds_dir = config.get('SOUNDS', 'captured_sounds_dir')
+        logging.debug("Captured sounds will be stored in: " + self.captured_sounds_dir)
+        print("Captured sounds will be stored in: ", self.captured_sounds_dir)
+        if '${' in self.captured_sounds_dir:
             logging.error("Microphone was not configured properly")
             raise RuntimeError("Microphone was not configured properly")
 
     def capture_audio(self):
         with self.m as m:
-            self.r.adjust_for_ambient_noise(m)
+            #self.r.adjust_for_ambient_noise(m)
             print("Listening for audio input...")
             audio = self.r.listen(m)
             print("Heard something")
             return audio
 
-    def capture_and_persist_audio(self):
+    def capture_and_persist_audio(self, file_name='microphone-results'):
         audio = self.capture_audio()
-        logging.info("Trying to persist captured audio")
-        with open(self.sound_samples_dir + "/microphone-results.wav", "wb") as f:
+        file_path = self.captured_sounds_dir + "/captured-" + file_name + ".wav"
+        print("Trying to persist captured audio as ", file_path)
+        with open(file_path, "wb") as f:
             f.write(audio.get_wav_data())
         return audio
 
@@ -48,21 +48,9 @@ class SpeechRecogniser:
 
     UNRECOGNISED = "Audio was not understood by speech recognition software"
 
-    project_path = "/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/src/main"
-
     def __init__(self):
         self.r = sr.Recognizer()
-
-        config = ConfigParser(interpolation=ExtendedInterpolation())
-        config.read(self.project_path + "/resources/doorbell.properties")
-
-        self.sound_samples_dir = config.get('SOUNDS', 'soundfile_doorbell_dir')
-        logging.debug("Sound samples directory: " + self.sound_samples_dir)
-        print("Sound samples directory: ", self.sound_samples_dir)
-        if '${' in self.sound_samples_dir:
-            logging.error("Microphone was not configured properly")
-            raise RuntimeError("Microphone was not configured properly")
-
+       
     def recognise_speech(self, audio):
         print("Now trying to translate text")
         try:
@@ -85,6 +73,6 @@ class SpeechRecogniser:
     def recognise_stored_audio(self, audio_file_path):
         wf = sr.AudioFile(audio_file_path)
         with wf as source:
-            self.r.adjust_for_ambient_noise(source)
+            #self.r.adjust_for_ambient_noise(source)
             audio = self.r.record(source)
         self.recognise_speech(audio)
