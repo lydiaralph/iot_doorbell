@@ -1,6 +1,7 @@
 *.iml
 *.idea/*
 *.log
+*/*.pyc
 *pycache*
 *twitter*.properties
 *.ini
@@ -8,3 +9,4 @@ smart_doorbell/src/main/resources/twitter.properties
 smart_doorbell/src/main/resources/sounds/captured/*
 venv
 */.coverage
+*.
