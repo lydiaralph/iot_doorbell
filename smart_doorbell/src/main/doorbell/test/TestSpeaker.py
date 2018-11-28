@@ -13,7 +13,9 @@ from doorbell import Speaker
 class TestSpeaker(unittest.TestCase):
 
     def setUp(self):
-        self.under_test = Speaker.Speaker()
+        self.under_test = Speaker.Speaker(cfg='resources/doorbell.properties',
+                                          log='doorbell/test/resources/logging/unittest.log')
+
         self.under_test.speak_sound = MagicMock()
 
     def test_basic_speaker_setup(self):

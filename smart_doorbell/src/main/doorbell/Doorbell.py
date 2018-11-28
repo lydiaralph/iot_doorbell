@@ -17,8 +17,6 @@ from Twitter import TwitterImpl
 
 class Doorbell:
 
-    #project_path = "/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/src/main"
-
     def __init__(self):
         logging_file_name = self.set_up_logging()
         logging.basicConfig(filename=logging_file_name, level=logging.DEBUG)
@@ -28,7 +26,7 @@ class Doorbell:
         #self.motion_sensor = MotionSensor(4)
         self.camera = Camera()
         self.speaker = Speaker()
-        print("SmartDoorbell application is ready. Logs will now be located at ", logging.basicConfig())
+        print("SmartDoorbell application is ready. Logs will now be located at ", logging_file_name)
 
     @staticmethod
     def set_up_logging():
@@ -36,7 +34,6 @@ class Doorbell:
         logging_file_path = 'smart_doorbell.full.log'
         Doorbell.refresh_logs(log_directory, logging_file_path)
         logging_file_name = "{}/{}".format(log_directory, logging_file_path)
-        print(logging_file_name)
         return logging_file_name
 
     @staticmethod
@@ -74,28 +71,28 @@ class Doorbell:
             print("New log file is ready to be used")
 
     def doorbell_response(self):
-        print("Asking visitor to identify the resident")
+        logging.info("Asking visitor to identify the resident")
         self.speaker.speak_who_do_you_want_to_speak_to()
         resident_name_audio = self.microphone.capture_and_persist_audio('resident-name')
         resident_name_audio_text = self.dictophone.recognise_speech(resident_name_audio)
         if resident_name_audio_text == self.dictophone.UNRECOGNISED:
-            print("Resident's name was not recognised")
+            logging.info("Resident's name was not recognised")
             return False
 
-        print("Visitor has asked for ", resident_name_audio_text)
-        print("Asking visitor to identify themselves")
+        logging.info("Visitor has asked for ", resident_name_audio_text)
+        logging.info("Asking visitor to identify themselves")
         self.speaker.speak_please_say_your_name()
         visitor_name_audio = self.microphone.capture_and_persist_audio('visitor-name')
         visitor_name_audio_text = self.dictophone.recognise_speech(visitor_name_audio)
-        print("Visitor's name seems to be ", visitor_name_audio_text)
+        logging.info("Visitor's name seems to be ", visitor_name_audio_text)
         resident_recognised = False
         for resident in self.residents:
             if resident.requested_name_matches_this_resident(resident_name_audio_text):
                 resident_recognised = True
-                print(resident.text_name, ' was requested by the visitor')
+                logging.info(resident.text_name, ' was requested by the visitor')
 
                 if resident.is_at_home:
-                    resident.request_answer_door(visitor_name_audio_text)
+                    resident.request_answer_door()
                 else:
                     self.speaker.speak_record_message()
                     recorded_message_text_audio = self.microphone.capture_and_persist_audio('message')
@@ -103,7 +100,7 @@ class Doorbell:
 
                     captured_image = None
                     try:
-                        print("Attempting to take photograph")
+                        logging.info("Attempting to take photograph")
                         self.speaker.speak_capture_picture()
                         captured_image = self.camera.capture_still()
                     finally:
@@ -118,29 +115,27 @@ def main():
     doorbell = Doorbell()
     
     while True:
-        print("Checking the door...")
+        logging.info("Checking the door...")
         #doorbell.motion_sensor.wait_for_motion()
         try:
-            print("Somebody is at the door")
+            logging.info("Somebody is at the door")
             doorbell.speaker.speak_hello()
             resident_recognised = doorbell.doorbell_response()
 
             # Try again
             if not resident_recognised:
-                print("Requested name was not recognised: trying again")
+                logging.info("Requested name was not recognised: trying again")
                 doorbell.speaker.speak_not_recognised()
                 resident_recognised = doorbell.doorbell_response()
 
             # Default: alert everyone
             if not resident_recognised:
-                print("Requested name was not recognised: sending general alert")
+                logging.info("Requested name was not recognised: sending general alert")
                 for resident in doorbell.residents:
                     resident.request_answer_door()
 
-        # TODO: Decide what to do about exceptions.
         except Exception as e:
-            print(e)
-            logging.debug(e)
+            logging.error(e)
 
         # Finished: don't want doorbell inactive if error occurs
         finally:

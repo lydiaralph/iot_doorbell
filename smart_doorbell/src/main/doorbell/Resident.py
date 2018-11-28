@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+import logging
 
 import soundex
 
@@ -11,12 +11,14 @@ class Resident:
     s = soundex.getInstance()
     dictophone = SpeechRecogniser()
 
-    def __init__(self, text_name, registered_names, twitter_impl):
+    def __init__(self, text_name, registered_names, twitter_impl,
+                 log='../logging/smart_doorbell.full.log'):
         # A list of sound files containing pronunciations of this resident's name
         # Examples: 'Matthew', 'Matt', 'Matty' 'Mr. Smith'
         self.registered_names = registered_names
         self.text_name = text_name
         self.t = twitter_impl
+        logging.basicConfig(filename=log, level=logging.DEBUG)
 
     def alert_visitor_at_door(self, visitor_name_audio):
         if self.is_at_home:
@@ -38,9 +40,8 @@ class Resident:
             .format(visitor_name_audio_text, recorded_message_audio_text)
         self.t.post_direct_message_with_image(message__format, image_file_path)
 
-
     def requested_name_matches_this_resident(self, requested_name_text):
-        print("Trying to match audio against resident ", self.text_name)
+        logging.info("Trying to match audio against resident ", self.text_name)
         stripped = requested_name_text.lower().replace(" ", "")
         for registered_name in self.registered_names:
             if registered_name.lower().replace(" ", "") == stripped:

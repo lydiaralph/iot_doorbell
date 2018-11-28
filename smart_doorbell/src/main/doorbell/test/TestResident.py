@@ -6,27 +6,23 @@ except ImportError:
     import unittest
 
 from unittest.mock import MagicMock
+from doorbell.test.utils import MockTwitter
 
 from doorbell import Resident
-from doorbell.Microphone import SpeechRecogniser
-from doorbell.test.utils.MockTwitter import MockTwitter
 
 
 class TestResident(unittest.TestCase):
 
     def setUp(self):
-        mock_microphone = SpeechRecogniser
-        mock_microphone.__init__ = MagicMock()
-        mock_microphone.recognise_stored_audio = MagicMock()
-
         self.mock_twitter = MockTwitter('test')
         self.mock_twitter.post_direct_message = MagicMock()
-        self.under_test = Resident.Resident('Test name', ['../resources/test.wav'], self.mock_twitter)
-        self.under_test.dictophone = mock_microphone
+        self.under_test = Resident.Resident('Test name', ['test'], self.mock_twitter,
+                                            log='doorbell/test/resources/logging/unittest.log')
+        self.under_test.dictophone = MagicMock
 
     def test_basic_resident_setup(self):
         assert self.under_test.text_name == 'Test name'
-        assert self.under_test.registered_audio_names == ['../resources/test.wav']
+        assert self.under_test.registered_names == 'test'
         assert self.under_test.t == self.mock_twitter
 
     def test_alert_visitor_at_door_resident_not_at_home(self):
@@ -66,7 +62,7 @@ class TestResident(unittest.TestCase):
         # Then
         except IsADirectoryError or TypeError:
             self.under_test.dictophone.recognise_stored_audio.assert_called_once()
-            self.under_test.dictophone.recognise_stored_audio.assert_called_once_with("../resources/test.wav")
+            self.under_test.dictophone.recognise_stored_audio.assert_called_once_with("test")
 
 
 if __name__ == 'main':

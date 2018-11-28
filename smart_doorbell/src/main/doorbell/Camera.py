@@ -7,7 +7,7 @@ from time import sleep
 from colour import Color
 
 import datetime
-
+import logging
 
 class Camera(PiCamera):
 
@@ -15,14 +15,15 @@ class Camera(PiCamera):
     snapshots_dir = ""
     videos_dir = ""
 
-    def __init__(self):
-        #project_path = "/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/src/main"
+    def __init__(self, cfg='../resources/doorbell.properties', log='../logging/smart_doorbell.full.log'):
         config = ConfigParser(interpolation=ExtendedInterpolation())
-        config.read("../resources/doorbell.properties")
+        config.read(cfg)
 
         # Default location: current directory
         self.snapshots_dir = config.get('CAMERA', 'snapshots_dir', fallback='')
         self.video_dir = config.get('CAMERA', 'videos_dir', fallback='')
+
+        logging.basicConfig(filename=log, level=logging.DEBUG)
 
         #self.annotate_text = None
         #self.annotate_text_size = 50
@@ -31,17 +32,17 @@ class Camera(PiCamera):
 
     def capture_still(self):
         current_time = datetime.datetime.now()
-        print("Current time: ", current_time)
+        logging.info("Current time: ", current_time)
         image_filepath = self.snapshots_dir + current_time + '.jpg'
         try:
             self.generic_camera_preparation(current_time)
-            print("Filepath for captured image: ", image_filepath)
+            logging.info("Filepath for captured image: ", image_filepath)
             self.capture(image_filepath)
         except Exception as e:
-            print("Encountered camera error: ", e.getMessage())
+            logging.error("Encountered camera error: ", str(e))
             image_filepath = None
         finally:
-            print("Stopping camera preview")
+            logging.info("Stopping camera preview")
             self.stop_preview()
             self.close()
             return image_filepath
@@ -59,7 +60,7 @@ class Camera(PiCamera):
 
     def generic_camera_preparation(self, current_time):
         #self.annotate_text = current_time
-        print("Starting preview of camera")
+        logging.info("Starting preview of camera")
         self.start_preview()
         # To give the camera time to adjust to light levels, etc.
         sleep(2)
@@ -67,7 +68,7 @@ class Camera(PiCamera):
 
 if __name__ == "__main__":
     c = PiCamera()
-    print("PC start")
+    logging.info("PC start")
     
     try:
         c.start_preview()

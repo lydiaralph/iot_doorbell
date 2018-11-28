@@ -1,14 +1,14 @@
-#!/usr/bin/env python3
-
+import logging
 from configparser import ConfigParser, ExtendedInterpolation
 
 import simpleaudio as sa
 
 
 class Speaker:
-    def __init__(self):
+    def __init__(self, cfg='../resources/doorbell.properties', log='../logging/smart_doorbell.full.log'):
         self.config = ConfigParser(interpolation=ExtendedInterpolation())
-        self.config.read("../resources/doorbell.properties")
+        self.config.read(cfg)
+        logging.basicConfig(filename=log, level=logging.DEBUG)
 
     def speak_hello(self):
         self.speak_sound('soundfile_hello')
@@ -34,10 +34,10 @@ class Speaker:
     def speak_capture_picture(self):
         self.speak_sound('soundfile_capture_picture')
 
-    def speak_sound(self, sound_config_property):        
+    def speak_sound(self, sound_config_property):
         sound_file_path = self.config.get('SOUNDS', sound_config_property)
-        print("Speaking sound " + sound_file_path)
+        logging.info("Speaking sound " + sound_file_path)
         wave_obj = sa.WaveObject.from_wave_file(sound_file_path)
         play_obj = wave_obj.play()
         play_obj.wait_done()
-        print("Finished speaking sound")
+        logging.info("Finished speaking sound")
