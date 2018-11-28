@@ -25,7 +25,7 @@ class Doorbell:
         self.residents = self.set_up_residents()
         self.microphone = AudioCapture()
         self.dictophone = SpeechRecogniser()
-        self.motion_sensor = MotionSensor(4)
+        #self.motion_sensor = MotionSensor(4)
         self.camera = Camera()
         self.speaker = Speaker()
         print("SmartDoorbell application is ready. Logs will now be located at ", logging.basicConfig())
@@ -41,8 +41,8 @@ class Doorbell:
 
     @staticmethod
     def set_up_residents():
-        resident_matt = Resident('Matt', ['matt', 'matthew', 'mr ralph', 'matthew ralph'], TwitterImpl('matt'))
-        resident_lydia = Resident('Lydia', ['lydia', 'mrs ralph', 'lydia ralph'], TwitterImpl('lydia'))
+        resident_matt = Resident('Matt', ['matt', 'matty', 'matthew', 'mr smith', 'matthew smith'], TwitterImpl('matt'))
+        resident_lydia = Resident('Thomas', ['thomas', 'tom', 'dom', 'tom smith'], TwitterImpl('lydia'))
         # resident_anyone = Resident('Anyone', ['anyone.wav', 'idontmind.wav'])
         residents = [resident_matt, resident_lydia]
         residents_list_string = ', '.join(str(x.text_name) for x in residents)
@@ -100,10 +100,14 @@ class Doorbell:
                     self.speaker.speak_record_message()
                     recorded_message_text_audio = self.microphone.capture_and_persist_audio('message')
                     recorded_message_text = self.dictophone.recognise_speech(recorded_message_text_audio)
-                    self.speaker.speak_capture_picture()
-                    captured_image = self.camera.capture_still()
 
-                    resident.send_remote_notification(visitor_name_audio_text,
+                    captured_image = None
+                    try:
+                        print("Attempting to take photograph")
+                        self.speaker.speak_capture_picture()
+                        captured_image = self.camera.capture_still()
+                    finally:
+                        resident.send_remote_notification(visitor_name_audio_text,
                                                       recorded_message_text,
                                                       captured_image)
 
@@ -115,7 +119,7 @@ def main():
     
     while True:
         print("Checking the door...")
-        doorbell.motion_sensor.wait_for_motion()
+        #doorbell.motion_sensor.wait_for_motion()
         try:
             print("Somebody is at the door")
             doorbell.speaker.speak_hello()
@@ -141,7 +145,7 @@ def main():
         # Finished: don't want doorbell inactive if error occurs
         finally:
             # Avoid multiple triggers for same visitor
-            sleep(60)
+            sleep(10)
 
 
 if __name__ == "__main__":

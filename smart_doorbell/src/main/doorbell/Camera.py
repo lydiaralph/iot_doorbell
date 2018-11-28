@@ -30,18 +30,21 @@ class Camera(PiCamera):
         #self.annotate_foreground = Color('white')
 
     def capture_still(self):
+        current_time = datetime.datetime.now()
+        print("Current time: ", current_time)
+        image_filepath = self.snapshots_dir + current_time + '.jpg'
         try:
-            current_time = datetime.datetime.now()
-            print("Current time: ", current_time)
             self.generic_camera_preparation(current_time)
-            image_filepath = self.snapshots_dir + current_time + '.jpg'
             print("Filepath for captured image: ", image_filepath)
             self.capture(image_filepath)
-            return image_filepath
+        except Exception as e:
+            print("Encountered camera error: ", e.getMessage())
+            image_filepath = None
         finally:
             print("Stopping camera preview")
             self.stop_preview()
             self.close()
+            return image_filepath
 
     def capture_video(self, record_time_seconds):
         try:
@@ -62,15 +65,14 @@ class Camera(PiCamera):
         sleep(2)
 
 
-def main():
+if __name__ == "__main__":
     c = PiCamera()
     print("PC start")
     
     try:
         c.start_preview()
         sleep(10)
+    finally:
         c.stop_preview()
-
-
-if __name__ == "__main__":
-    main()
+        c.close()
+    

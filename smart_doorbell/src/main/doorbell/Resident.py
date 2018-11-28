@@ -36,7 +36,7 @@ class Resident:
 
         message__format = "{} visited the house and left a message: {}"\
             .format(visitor_name_audio_text, recorded_message_audio_text)
-        self.t.post_direct_message(message__format, image_file_path)
+        self.t.post_direct_message_with_image(message__format, image_file_path)
 
 
     def requested_name_matches_this_resident(self, requested_name_text):

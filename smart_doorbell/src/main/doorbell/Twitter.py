@@ -42,8 +42,10 @@ class TwitterImpl:
 
     def post_direct_message_with_image(self, message, image_path):
         if image_path is None:
-            self.api.PostDirectMessage(self, message)
+            print("Posting message with no image")
+            self.api.PostDirectMessage(text=message, user_id=self.user_id)
         else:
+            print("Posting message with image")
             self.api.PostDirectMessage(text=message, user_id=self.user_id, media_file_path=image_path, media_type='dm_image')
         # TODO: Change to log
         print("Successfully sent message to Twitter user", self.user_id)
