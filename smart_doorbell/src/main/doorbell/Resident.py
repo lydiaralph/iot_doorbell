@@ -2,7 +2,7 @@ import logging
 
 import soundex
 
-from Microphone import SpeechRecogniser
+from doorbell.Microphone import SpeechRecogniser
 
 
 class Resident:
@@ -36,12 +36,12 @@ class Resident:
         if visitor_name_audio_text is self.dictophone.UNRECOGNISED:
             visitor_name_audio_text = "Somebody"
 
-        message__format = "{} visited the house and left a message: {}"\
+        message_format = "{} visited the house and left a message: {}"\
             .format(visitor_name_audio_text, recorded_message_audio_text)
-        self.t.post_direct_message_with_image(message__format, image_file_path)
+        self.t.post_direct_message_with_image(message_format, image_file_path)
 
     def requested_name_matches_this_resident(self, requested_name_text):
-        logging.info("Trying to match audio against resident ", self.text_name)
+        logging.info("Trying to match audio against resident %s", self.text_name)
         stripped = requested_name_text.lower().replace(" ", "")
         for registered_name in self.registered_names:
             if registered_name.lower().replace(" ", "") == stripped:

@@ -1,32 +1,34 @@
 #!/usr/bin/env python3
 
-from gpiozero import MotionSensor
-from time import sleep
-from datetime import datetime
-import os
-from shutil import copyfile
-from Speaker import Speaker
-from Camera import Camera
-from Microphone import SpeechRecogniser, AudioCapture
-from Resident import Resident
-
 import logging
+import os
+from datetime import datetime
+from shutil import copyfile
+# from gpiozero import MotionSensor
+from time import sleep
 
-from Twitter import TwitterImpl
+#from doorbell.Camera import Camera
+from doorbell.Microphone import SpeechRecogniser, AudioCapture
+from doorbell.Resident import Resident
+from doorbell.Speaker import Speaker
+from doorbell.Twitter import TwitterImpl
 
 
 class Doorbell:
 
-    def __init__(self):
-        logging_file_name = self.set_up_logging()
-        logging.basicConfig(filename=logging_file_name, level=logging.DEBUG)
-        self.residents = self.set_up_residents()
-        self.microphone = AudioCapture()
-        self.dictophone = SpeechRecogniser()
+    def __init__(self, residents, microphone, dictophone, speaker,
+                 log='../logging/smart_doorbell.full.log'):
+        if log is None:
+            log = self.set_up_logging()
+        logging.basicConfig(filename=log, level=logging.DEBUG)
+
+        self.residents = residents
+        self.microphone = microphone
+        self.dictophone = dictophone
         #self.motion_sensor = MotionSensor(4)
-        self.camera = Camera()
-        self.speaker = Speaker()
-        print("SmartDoorbell application is ready. Logs will now be located at ", logging_file_name)
+        #self.camera = Camera()
+        self.speaker = speaker
+        print("SmartDoorbell application is ready. Logs will now be located at ", log)
 
     @staticmethod
     def set_up_logging():
@@ -36,14 +38,7 @@ class Doorbell:
         logging_file_name = "{}/{}".format(log_directory, logging_file_path)
         return logging_file_name
 
-    @staticmethod
-    def set_up_residents():
-        resident_matt = Resident('Matt', ['matt', 'matty', 'matthew', 'mr smith', 'matthew smith'], TwitterImpl('matt'))
-        resident_lydia = Resident('Thomas', ['thomas', 'tom', 'dom', 'tom smith'], TwitterImpl('lydia'))
-        residents = [resident_matt, resident_lydia]
-        residents_list_string = ', '.join(str(x.text_name) for x in residents)
-        logging.debug("Registered residents: " + residents_list_string)
-        return residents
+
 
     @staticmethod
     def refresh_logs(log_directory, logging_file_path):
@@ -78,12 +73,12 @@ class Doorbell:
             logging.info("Resident's name was not recognised")
             return False
 
-        logging.info("Visitor has asked for ", resident_name_audio_text)
+        logging.info("Visitor has asked for %s", resident_name_audio_text)
         logging.info("Asking visitor to identify themselves")
         self.speaker.speak_please_say_your_name()
         visitor_name_audio = self.microphone.capture_and_persist_audio('visitor-name')
         visitor_name_audio_text = self.dictophone.recognise_speech(visitor_name_audio)
-        logging.info("Visitor's name seems to be ", visitor_name_audio_text)
+        logging.info("Visitor's name seems to be %s", visitor_name_audio_text)
         resident_recognised = False
         for resident in self.residents:
             if resident.requested_name_matches_this_resident(resident_name_audio_text):
@@ -101,17 +96,33 @@ class Doorbell:
                     try:
                         logging.info("Attempting to take photograph")
                         self.speaker.speak_capture_picture()
-                        captured_image = self.camera.capture_still()
+                        #captured_image = self.camera.capture_still()
                     finally:
                         resident.send_remote_notification(visitor_name_audio_text,
-                                                      recorded_message_text,
-                                                      captured_image)
+                                                          recorded_message_text,
+                                                          captured_image)
 
         return resident_recognised
 
+    @staticmethod
+    def set_up_residents():
+        resident_matt = Resident('Matt', ['matt', 'matty', 'matthew', 'mr ralph', 'matthew ralph'], TwitterImpl('matt'))
+        resident_lydia = Resident('Lydia', ['Lydia', 'Lid', 'mrs ralph'], TwitterImpl('lydia'))
+        residents = [resident_matt, resident_lydia]
+        residents_list_string = ', '.join(str(x.text_name) for x in residents)
+        logging.debug("Registered residents: " + residents_list_string)
+        return residents
+
 
 def main():
-    doorbell = Doorbell()
+    residents = Doorbell.set_up_residents()
+    microphone = AudioCapture()
+    dictophone = SpeechRecogniser()
+    # motion_sensor = MotionSensor(4)
+    # camera = Camera()
+    speaker = Speaker()
+
+    doorbell = Doorbell(residents=residents, microphone=microphone, dictophone=dictophone, speaker=speaker)
     
     while True:
         logging.info("Checking the door...")

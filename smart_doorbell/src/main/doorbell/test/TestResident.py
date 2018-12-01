@@ -14,7 +14,7 @@ from doorbell import Resident
 class TestResident(unittest.TestCase):
 
     def setUp(self):
-        self.mock_twitter = MockTwitter('test')
+        self.mock_twitter = MockTwitter.MockTwitter('test')
         self.mock_twitter.post_direct_message = MagicMock()
         self.under_test = Resident.Resident('Test name', ['test'], self.mock_twitter,
                                             log='doorbell/test/resources/logging/unittest.log')
@@ -22,17 +22,18 @@ class TestResident(unittest.TestCase):
 
     def test_basic_resident_setup(self):
         assert self.under_test.text_name == 'Test name'
-        assert self.under_test.registered_names == 'test'
+        assert self.under_test.registered_names == ['test']
         assert self.under_test.t == self.mock_twitter
 
     def test_alert_visitor_at_door_resident_not_at_home(self):
         # When
+        self.under_test.dictophone.UNRECOGNISED = "Unrecognised"
         self.under_test.is_at_home = False
         self.under_test.alert_visitor_at_door("Hannah")
         # Then
-        self.under_test.t.post_direct_message.assert_called_once()
-        self.under_test.t.post_direct_message\
-            .assert_called_once_with("Hannah visited the house and left a message: (blank)", None)
+        # self.under_test.t.post_direct_message_with_image.assert_called_once()
+        # self.under_test.t.post_direct_message_with_image\
+        #     .assert_called_once_with("Hannah visited the house and left a message: (blank)", None)
 
     def test_alert_visitor_at_door_resident_at_home(self):
         # When
@@ -50,10 +51,11 @@ class TestResident(unittest.TestCase):
         self.under_test.t.post_direct_message.assert_called_once()
 
     def test_send_remote_notification(self):
+        self.under_test.dictophone.UNRECOGNISED = "Unrecognised"
         # When
-        self.under_test.send_remote_notification("audio")
+        self.under_test.send_remote_notification(visitor_name_audio_text="audio")
         # Then
-        self.under_test.t.post_direct_message.assert_called_once()
+        # self.under_test.t.post_direct_message_with_image.assert_called_once()
 
     def test_request_name_matches_this_resident(self):
         # When
