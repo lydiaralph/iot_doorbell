@@ -59,7 +59,7 @@ class Camera(PiCamera):
             self.close()
 
     def generic_camera_preparation(self, current_time):
-        #self.annotate_text = current_time
+        self.annotate_text = current_time
         logging.info("Starting preview of camera")
         self.start_preview()
         # To give the camera time to adjust to light levels, etc.

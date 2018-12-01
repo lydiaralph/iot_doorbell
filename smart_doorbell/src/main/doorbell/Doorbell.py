@@ -40,7 +40,6 @@ class Doorbell:
     def set_up_residents():
         resident_matt = Resident('Matt', ['matt', 'matty', 'matthew', 'mr smith', 'matthew smith'], TwitterImpl('matt'))
         resident_lydia = Resident('Thomas', ['thomas', 'tom', 'dom', 'tom smith'], TwitterImpl('lydia'))
-        # resident_anyone = Resident('Anyone', ['anyone.wav', 'idontmind.wav'])
         residents = [resident_matt, resident_lydia]
         residents_list_string = ', '.join(str(x.text_name) for x in residents)
         logging.debug("Registered residents: " + residents_list_string)

@@ -12,11 +12,7 @@ sudo pip3 install picamera
 sudo pip3 install colour
 
 ## AUDIO
-# Trying to install portaudio!
-#sudo apt-get install libasound-dev
-#sudo apt-get install portaudio19-dev
-#sudo apt-get install libportaudio2
-
+brew install portaudio
 brew install pyaudio
 sudo pip3 install pyaudio
 
