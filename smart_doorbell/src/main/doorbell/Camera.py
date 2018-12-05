@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 
-from picamera import PiCamera
-from configparser import ConfigParser, ExtendedInterpolation
-
-from time import sleep
-from colour import Color
-
 import datetime
 import logging
+from pathlib import Path
+from time import sleep
+
+from picamera import PiCamera
 
 
 class Camera(PiCamera):
@@ -16,14 +14,20 @@ class Camera(PiCamera):
     snapshots_dir = ""
     videos_dir = ""
 
-    def __init__(self, cfg='../resources/doorbell.properties',
+    def __init__(self, captured_dir='../resources/captured',
                  log='../logging/smart_doorbell.full.log'):
-        config = ConfigParser(interpolation=ExtendedInterpolation())
-        config.read(cfg)
+        # config = ConfigParser(interpolation=ExtendedInterpolation())
+        # config.read(cfg)
 
         # Default location: current directory
-        self.snapshots_dir = config.get('CAMERA', 'snapshots_dir', fallback='')
-        self.video_dir = config.get('CAMERA', 'videos_dir', fallback='')
+
+        captured_samples_dir = Path(captured_dir).resolve()
+        if not captured_samples_dir.exists():
+            raise RuntimeError("Could not find captured samples directory at ",
+                               self.sounds_dir)
+
+        self.snapshots_dir = captured_samples_dir / 'images'
+        self.video_dir = captured_samples_dir / 'videos'
 
         logging.basicConfig(filename=log, level=logging.DEBUG)
 
@@ -35,7 +39,7 @@ class Camera(PiCamera):
     def capture_still(self):
         current_time = datetime.datetime.now()
         logging.info("Current time: ", current_time)
-        image_filepath = self.snapshots_dir + current_time + '.jpg'
+        image_filepath = str((self.snapshots_dir / str(current_time)).with_suffix('.jpg'))
         try:
             self.generic_camera_preparation()
             logging.info("Filepath for captured image: ", image_filepath)
@@ -53,7 +57,9 @@ class Camera(PiCamera):
         try:
             current_time = datetime.datetime.now()
             self.generic_camera_preparation()
-            self.start_recording(self.video_dir + current_time + '.h264')
+            video_filepath = str((self.video_dir / str(current_time)).with_suffix('.h264'))
+            logging.debug("Capturing video to " + video_filepath)
+            self.start_recording(video_filepath)
             sleep(record_time_seconds)
             self.stop_recording()
         finally:

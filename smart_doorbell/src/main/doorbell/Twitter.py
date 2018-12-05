@@ -8,15 +8,9 @@ import twitter
 class TwitterImpl:
 
     def __init__(self, resident_name,
-                 cfg='../resources/doorbell.properties',
                  twitter_standard_cfg='../resources/twitter.properties',
                  twitter_cfg='../resources/twitter.{}.properties',
                  log='../logging/smart_doorbell.full.log'):
-
-        standard_configuration = Path(cfg).resolve()
-        if not standard_configuration.exists():
-            raise RuntimeError("Could not find project configuration file at ",
-                               standard_configuration)
 
         twitter_standard_configuration = Path(twitter_standard_cfg).resolve()
         if not twitter_standard_configuration.exists():
@@ -35,8 +29,6 @@ class TwitterImpl:
         logging.basicConfig(filename=log_file, level=logging.DEBUG)
 
         config = ConfigParser()
-        
-        config.read(standard_configuration)
         config.read(twitter_standard_configuration)
         config.read(twitter_configuration)
 
