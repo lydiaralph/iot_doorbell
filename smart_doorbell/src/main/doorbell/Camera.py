@@ -68,13 +68,13 @@ class Camera(PiCamera):
         sleep(2)
 
 
-if __name__ == "__main__":
-    c = PiCamera()
-    logging.info("PC start")
-
-    try:
-        c.start_preview()
-        sleep(10)
-    finally:
-        c.stop_preview()
-        c.close()
+# if __name__ == "__main__":
+#     c = PiCamera()
+#     logging.info("PC start")
+#
+#     try:
+#         c.start_preview()
+#         sleep(10)
+#     finally:
+#         c.stop_preview()
+#         c.close()
