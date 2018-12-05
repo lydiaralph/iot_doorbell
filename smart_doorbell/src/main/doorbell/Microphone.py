@@ -66,15 +66,12 @@ class SpeechRecogniser:
         try:
             recognised_text = self.r.recognize_google(audio, language='en-GB')
             logging.info("Google Speech Recognition thinks you said \n" + recognised_text)
-            logging.info("Google Speech Recognition thinks you said \n", recognised_text)
             return recognised_text
         except sr.UnknownValueError:
             logging.error("Google Speech Recognition could not understand audio")
-            logging.info("Google Speech Recognition could not understand audio")
             return self.UNRECOGNISED
         except sr.RequestError as e:
             logging.error("Could not request results from Google Speech Recognition service; {0}".format(e))
-            logging.info("Could not request results from Google Speech Recognition service; {0}".format(e))
             return self.UNRECOGNISED
         except Exception as e:
             logging.info(e)
