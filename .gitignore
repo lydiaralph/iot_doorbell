@@ -6,7 +6,7 @@
 *twitter*.properties
 *.ini
 smart_doorbell/src/main/resources/twitter.properties
-smart_doorbell/src/main/resources/sounds/captured/*
+smart_doorbell/src/main/resources/captured/*
 venv
 smart_doorbell/src/main/*.coverage
 smart_doorbell/src/main/tests/coverage/*

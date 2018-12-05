@@ -22,11 +22,10 @@ class TwitterImpl:
             raise RuntimeError("Could not find twitter configuration file for ",
                                resident_name, " at ", twitter_configuration)
 
-        log_file = Path(log)
-        if not log_file.exists():
-            raise RuntimeError("Could not find project logging file at ", log_file)
+        if not Path(log).exists():
+            raise RuntimeError("Could not find project logging file at ", log)
 
-        logging.basicConfig(filename=log_file, level=logging.DEBUG)
+        logging.basicConfig(filename=log, level=logging.DEBUG)
 
         config = ConfigParser()
         config.read(twitter_standard_configuration)

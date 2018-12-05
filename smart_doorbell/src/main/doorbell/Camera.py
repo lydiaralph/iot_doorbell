@@ -16,11 +16,6 @@ class Camera(PiCamera):
 
     def __init__(self, captured_dir='../resources/captured',
                  log='../logging/smart_doorbell.full.log'):
-        # config = ConfigParser(interpolation=ExtendedInterpolation())
-        # config.read(cfg)
-
-        # Default location: current directory
-
         captured_samples_dir = Path(captured_dir).resolve()
         if not captured_samples_dir.exists():
             raise RuntimeError("Could not find captured samples directory at ",

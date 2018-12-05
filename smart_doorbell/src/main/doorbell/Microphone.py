@@ -11,7 +11,7 @@ import logging
 class AudioCapture:
 
     def __init__(self, cfg='../resources/doorbell.properties',
-                 sounds_dir='../resources/sounds/captured/sounds',
+                 sounds_dir='../resources/captured/sounds',
                  log='../logging/smart_doorbell.full.log'):
         self.r = sr.Recognizer()
 
@@ -29,7 +29,7 @@ class AudioCapture:
         self.captured_sounds_dir = Path(sounds_dir).resolve()
         if not self.captured_sounds_dir.exists():
             raise RuntimeError("Could not find directory for storing captured sound files at ",
-                               self.captured_sounds_dir)
+                               str(self.captured_sounds_dir))
 
         logging.debug("Captured sounds will be stored in: " + str(self.captured_sounds_dir))
 
@@ -48,9 +48,10 @@ class AudioCapture:
 
         file_path = (self.captured_sounds_dir / file_to_persist).with_suffix('.wav')
 
-        logging.info("Trying to persist captured audio as ", file_path)
+        logging.info("Trying to persist captured audio as " + str(file_path))
         with open(str(file_path), "wb") as f:
             f.write(audio.get_wav_data())
+
         return audio
 
 
@@ -58,8 +59,9 @@ class SpeechRecogniser:
 
     UNRECOGNISED = "Audio was not understood by speech recognition software"
 
-    def __init__(self):
+    def __init__(self, log='../logging/smart_doorbell.full.log'):
         self.r = sr.Recognizer()
+        logging.basicConfig(filename=log, level=logging.DEBUG)
 
     def recognise_speech(self, audio):
         logging.info("Now trying to translate text")
