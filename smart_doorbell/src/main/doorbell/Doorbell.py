@@ -7,7 +7,7 @@ from shutil import copyfile
 # from gpiozero import MotionSensor
 from time import sleep
 
-#from Camera import Camera
+# from Camera import Camera
 from doorbell.Microphone import SpeechRecogniser, AudioCapture
 from doorbell.Resident import Resident
 from doorbell.Speaker import Speaker

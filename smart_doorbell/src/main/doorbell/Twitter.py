@@ -41,7 +41,7 @@ class TwitterImpl:
                                consumer_secret=con_sec_key,
                                access_token_key=access_token,
                                access_token_secret=access_token_secret)
-        
+
         self.api.VerifyCredentials()
 
         self.user_id = config.get(resident_name.upper(), 'user_id')

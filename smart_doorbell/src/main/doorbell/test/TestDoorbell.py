@@ -30,14 +30,16 @@ class TestDoorbell(unittest.TestCase):
 
     def test_doorbell_response_with_unrecognised_resident(self):
         # Given
-        self.under_test.dictophone.recognise_speech.return_value = self.under_test.dictophone.UNRECOGNISED
+        self.under_test.dictophone.recognise_speech.return_value = \
+            self.under_test.dictophone.UNRECOGNISED
 
         # When
         self.under_test.doorbell_response()
 
         # Then
         self.under_test.speaker.speak_who_do_you_want_to_speak_to.assert_called_once()
-        self.under_test.microphone.capture_and_persist_audio.assert_called_once_with('resident-name')
+        self.under_test.microphone.capture_and_persist_audio\
+            .assert_called_once_with('resident-name')
         self.under_test.dictophone.recognise_speech.assert_called_once()
 
 

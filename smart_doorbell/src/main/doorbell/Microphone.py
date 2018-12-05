@@ -35,7 +35,7 @@ class AudioCapture:
 
     def capture_audio(self):
         with self.m as m:
-            #self.r.adjust_for_ambient_noise(m)
+            # self.r.adjust_for_ambient_noise(m)
             logging.info("Listening for audio input...")
             audio = self.r.listen(m)
             logging.info("Heard something")
@@ -60,7 +60,7 @@ class SpeechRecogniser:
 
     def __init__(self):
         self.r = sr.Recognizer()
-       
+
     def recognise_speech(self, audio):
         logging.info("Now trying to translate text")
         try:
@@ -71,7 +71,8 @@ class SpeechRecogniser:
             logging.error("Google Speech Recognition could not understand audio")
             return self.UNRECOGNISED
         except sr.RequestError as e:
-            logging.error("Could not request results from Google Speech Recognition service; {0}".format(e))
+            logging.error("Could not request results from Google Speech Recognition service; {0}"
+                          .format(e))
             return self.UNRECOGNISED
         except Exception as e:
             logging.info(e)
@@ -80,6 +81,6 @@ class SpeechRecogniser:
     def recognise_stored_audio(self, audio_file_path):
         wf = sr.AudioFile(audio_file_path)
         with wf as source:
-            #self.r.adjust_for_ambient_noise(source)
+            # self.r.adjust_for_ambient_noise(source)
             audio = self.r.record(source)
         self.recognise_speech(audio)

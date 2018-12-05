@@ -33,3 +33,5 @@ sudo pip3 install git+git://github.com/bear/python-twitter.git@d33e051d7c5f92b89
 sudo pip3 install -U pytest
 sudo pip3 install unittest2
 sudo pip3 install mock
+sudo pip3 install coverage
+sudo pip3 install flake8
