@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 # Copied example from https://pypi.org/project/SpeechRecognition/3.8.1/ examples and followed guide
+from pathlib import Path
 
 import speech_recognition as sr
 from configparser import ConfigParser, ExtendedInterpolation
@@ -9,7 +10,9 @@ import logging
 
 class AudioCapture:
 
-    def __init__(self, cfg='../resources/doorbell.properties', log='../logging/smart_doorbell.full.log'):
+    def __init__(self, cfg='../resources/doorbell.properties',
+                 sounds_dir='../resources/sounds/captured',
+                 log='../logging/smart_doorbell.full.log'):
         self.r = sr.Recognizer()
 
         config = ConfigParser(interpolation=ExtendedInterpolation())
@@ -23,11 +26,12 @@ class AudioCapture:
         # self.m = sr.Microphone(device_index=int(port))
         self.m = sr.Microphone()
 
-        self.captured_sounds_dir = config.get('SOUNDS', 'captured_sounds_dir')
-        logging.debug("Captured sounds will be stored in: " + self.captured_sounds_dir)
-        if '${' in self.captured_sounds_dir:
-            logging.error("Microphone was not configured properly")
-            raise RuntimeError("Microphone was not configured properly")
+        self.captured_sounds_dir = Path(sounds_dir).resolve()
+        if not self.captured_sounds_dir.exists():
+            raise RuntimeError("Could not find directory for storing captured sound files at ",
+                               self.captured_sounds_dir)
+
+        logging.debug("Captured sounds will be stored in: " + str(self.captured_sounds_dir))
 
     def capture_audio(self):
         with self.m as m:
@@ -39,9 +43,13 @@ class AudioCapture:
 
     def capture_and_persist_audio(self, file_name='microphone-results'):
         audio = self.capture_audio()
-        file_path = self.captured_sounds_dir + "/captured-" + file_name + ".wav"
+
+        file_to_persist = 'captured-' + file_name
+
+        file_path = (self.captured_sounds_dir / file_to_persist).with_suffix('.wav')
+
         logging.info("Trying to persist captured audio as ", file_path)
-        with open(file_path, "wb") as f:
+        with open(str(file_path), "wb") as f:
             f.write(audio.get_wav_data())
         return audio
 
