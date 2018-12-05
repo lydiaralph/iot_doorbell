@@ -14,6 +14,7 @@ class TestMicrophone(unittest.TestCase):
 
     def setUp(self):
         self.ac = AudioCapture(cfg='resources/doorbell.properties',
+                               sounds_dir='resources/captured/sounds',
                                log='doorbell/test/resources/logging/unittest.log')
         self.sr = SpeechRecogniser()
         self.sr.r = MagicMock()
@@ -22,7 +23,7 @@ class TestMicrophone(unittest.TestCase):
     def test_basic_microphone_setup(self):
         assert self.ac.r is not None
         assert self.ac.captured_sounds_dir is not None
-        assert '${' not in self.ac.captured_sounds_dir
+        assert self.ac.captured_sounds_dir.exists()
         assert self.sr.r is not None
 
     def test_capture_audio(self):

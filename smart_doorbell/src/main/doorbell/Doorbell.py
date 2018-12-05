@@ -7,7 +7,7 @@ from shutil import copyfile
 # from gpiozero import MotionSensor
 from time import sleep
 
-#from doorbell.Camera import Camera
+#from Camera import Camera
 from doorbell.Microphone import SpeechRecogniser, AudioCapture
 from doorbell.Resident import Resident
 from doorbell.Speaker import Speaker
@@ -17,7 +17,7 @@ from doorbell.Twitter import TwitterImpl
 class Doorbell:
 
     def __init__(self, residents, microphone, dictophone, speaker,
-                 log='../logging/smart_doorbell.full.log'):
+                 log='logging/smart_doorbell.full.log'):
         if log is None:
             log = self.set_up_logging()
         logging.basicConfig(filename=log, level=logging.DEBUG)

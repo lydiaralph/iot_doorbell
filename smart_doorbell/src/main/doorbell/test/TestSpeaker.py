@@ -13,14 +13,14 @@ from doorbell import Speaker
 class TestSpeaker(unittest.TestCase):
 
     def setUp(self):
-        self.under_test = Speaker.Speaker(cfg='resources/doorbell.properties',
-                                          log='doorbell/test/resources/logging/unittest.log')
+        self.under_test = Speaker.Speaker(
+            sounds_input_dir='resources/sounds/doorbell',
+            log='doorbell/test/resources/logging/unittest.log')
 
         self.under_test.speak_sound = MagicMock()
 
     def test_basic_speaker_setup(self):
-        assert self.under_test.config.sections() is not None
-        assert self.under_test.config['SOUNDS'] is not None
+        assert self.under_test.sounds_dir.exists()
 
     def test_speak_hello(self):
         self.under_test.speak_hello()
@@ -48,7 +48,7 @@ class TestSpeaker(unittest.TestCase):
 
     def test_speak_delivery(self):
         self.under_test.speak_delivery()
-        self.under_test.speak_sound.assert_called_once()
+        self.under_test.speak_sound.assert_not_called()
 
 
 if __name__ == 'main':

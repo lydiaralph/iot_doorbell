@@ -11,7 +11,7 @@ import logging
 class AudioCapture:
 
     def __init__(self, cfg='../resources/doorbell.properties',
-                 sounds_dir='../resources/sounds/captured',
+                 sounds_dir='../resources/sounds/captured/sounds',
                  log='../logging/smart_doorbell.full.log'):
         self.r = sr.Recognizer()
 
