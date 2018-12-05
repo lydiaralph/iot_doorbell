@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import speech_recognition
 from speech_recognition import AudioData
 
 try:
@@ -51,6 +52,26 @@ class TestMicrophone(unittest.TestCase):
         print(str(expected_audio_path))
         assert expected_audio_path.exists()
 
+    def test_recognise_speech_value_exception(self):
+        self.sr.r.recognize_google.return_value = speech_recognition.UnknownValueError
+
+        result = self.sr.recognise_speech(audio="abc")
+        self.sr.r.recognize_google.assert_called_once()
+        assert result is self.sr.UNRECOGNISED
+
+    def test_recognise_speech_request_exception(self):
+        self.sr.r.recognize_google.return_value = speech_recognition.RequestError
+
+        result = self.sr.recognise_speech(audio="abc")
+        self.sr.r.recognize_google.assert_called_once()
+        assert result is self.sr.UNRECOGNISED
+
+    def test_recognise_speech_request_exception(self):
+        self.sr.r.recognize_google.return_value = Exception
+
+        result = self.sr.recognise_speech(audio="abc")
+        self.sr.r.recognize_google.assert_called_once()
+        assert result is self.sr.UNRECOGNISED
 
     def test_recognise_speech(self):
         self.sr.recognise_speech("abc")
