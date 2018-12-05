@@ -106,17 +106,14 @@ class Doorbell:
         logging.info("Visitor has asked for %s", resident_name_audio_text)
         logging.info("Asking visitor to identify themselves")
         self.speaker.speak_please_say_your_name()
-        visitor_name_audio = \
-            self.microphone.capture_and_persist_audio('visitor-name')
-        visitor_name_audio_text = \
-            self.dictophone.recognise_speech(visitor_name_audio)
+        visitor_name_audio = self.microphone.capture_and_persist_audio('visitor-name')
+        visitor_name_audio_text = self.dictophone.recognise_speech(visitor_name_audio)
         logging.info("Visitor's name seems to be %s", visitor_name_audio_text)
         resident_recognised = False
         for resident in self.residents:
             if resident.requested_name_matches_this_resident(resident_name_audio_text):
                 resident_recognised = True
-                logging.info(resident.text_name +
-                             ' was requested by the visitor')
+                logging.info(resident.text_name + ' was requested by the visitor')
 
                 if resident.is_at_home:
                     resident.request_answer_door()
