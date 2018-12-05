@@ -63,6 +63,34 @@ class Doorbell:
             with open(full_path, 'a'):
                 os.utime(full_path, None)
             print("New log file is ready to be used")
+    def run_doorbell_application(self):
+        logging.info("Checking the door...")
+        # doorbell.motion_sensor.wait_for_motion()
+        try:
+            logging.info("Somebody is at the door")
+            self.speaker.speak_hello()
+            resident_recognised = self.doorbell_response()
+
+            # Try again
+            if not resident_recognised:
+                logging.info("Requested name was not recognised: trying again")
+                self.speaker.speak_not_recognised()
+                resident_recognised = self.doorbell_response()
+
+            # Default: alert everyone
+            if not resident_recognised:
+                logging.info("Requested name was not recognised: "
+                             "sending general alert")
+                for resident in self.residents:
+                    resident.request_answer_door()
+
+        except Exception as e:
+            logging.error(e)
+
+        # Finished: don't want doorbell inactive if error occurs
+        finally:
+            # Avoid multiple triggers for same visitor
+            sleep(10)
 
     def doorbell_response(self):
         logging.info("Asking visitor to identify the resident")
@@ -137,33 +165,7 @@ def main():
                         dictophone=dictophone, speaker=speaker)
 
     while True:
-        logging.info("Checking the door...")
-        # doorbell.motion_sensor.wait_for_motion()
-        try:
-            logging.info("Somebody is at the door")
-            doorbell.speaker.speak_hello()
-            resident_recognised = doorbell.doorbell_response()
-
-            # Try again
-            if not resident_recognised:
-                logging.info("Requested name was not recognised: trying again")
-                doorbell.speaker.speak_not_recognised()
-                resident_recognised = doorbell.doorbell_response()
-
-            # Default: alert everyone
-            if not resident_recognised:
-                logging.info("Requested name was not recognised: "
-                             "sending general alert")
-                for resident in doorbell.residents:
-                    resident.request_answer_door()
-
-        except Exception as e:
-            logging.error(e)
-
-        # Finished: don't want doorbell inactive if error occurs
-        finally:
-            # Avoid multiple triggers for same visitor
-            sleep(10)
+        doorbell.run_doorbell_application()
 
 
 if __name__ == "__main__":
