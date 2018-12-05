@@ -66,9 +66,3 @@ class TwitterImpl:
     def post_to_profile(self, message):
         logging.error("Method 'post_to_profile' not supported")
         pass
-
-
-if __name__ == '__main__':
-    t = TwitterImpl('LYDIA')
-    t.get_statuses()
-    t.post_direct_message('third test')

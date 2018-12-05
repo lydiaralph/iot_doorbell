@@ -50,6 +50,10 @@ class TestSpeaker(unittest.TestCase):
         self.under_test.speak_delivery()
         self.under_test.speak_sound.assert_not_called()
 
+    def test_speak_capture_picture(self):
+        self.under_test.speak_capture_picture()
+        self.under_test.speak_sound.assert_called_once_with('capture_photo')
+
 
 if __name__ == 'main':
     unittest.main()

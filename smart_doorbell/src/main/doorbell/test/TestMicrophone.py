@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from speech_recognition import AudioData
 
 try:
     import unittest2 as unittest
@@ -32,9 +33,24 @@ class TestMicrophone(unittest.TestCase):
         self.ac.r.listen.assert_called_once_with(self.ac.m)
 
     def test_capture_and_persist_audio(self):
-        self.ac.capture_audio()
+        # Given
+        fake_audio = MagicMock()
+        fake_audio.get_wav_data.return_value = "abc".encode()
+        self.ac.r.listen.return_value = fake_audio
+        expected_audio_path = (self.ac.captured_sounds_dir / 'captured-microphone-results.wav')
+        if expected_audio_path.exists():
+            expected_audio_path.unlink()
+        assert not expected_audio_path.exists()
+
+        # When
+        self.ac.capture_and_persist_audio()
         self.ac.r.listen.assert_called_once()
         self.ac.r.listen.assert_called_once_with(self.ac.m)
+
+        # Then
+        print(str(expected_audio_path))
+        assert expected_audio_path.exists()
+
 
     def test_recognise_speech(self):
         self.sr.recognise_speech("abc")

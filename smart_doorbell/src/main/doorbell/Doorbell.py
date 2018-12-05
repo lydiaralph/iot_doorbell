@@ -3,6 +3,7 @@
 import logging
 import os
 from datetime import datetime
+from pathlib import Path
 from shutil import copyfile
 # from gpiozero import MotionSensor
 from time import sleep
@@ -63,6 +64,7 @@ class Doorbell:
             with open(full_path, 'a'):
                 os.utime(full_path, None)
             print("New log file is ready to be used")
+
     def run_doorbell_application(self):
         logging.info("Checking the door...")
         # doorbell.motion_sensor.wait_for_motion()
@@ -89,8 +91,7 @@ class Doorbell:
 
         # Finished: don't want doorbell inactive if error occurs
         finally:
-            # Avoid multiple triggers for same visitor
-            sleep(10)
+            logging.info("Finished doorbell response")
 
     def doorbell_response(self):
         logging.info("Asking visitor to identify the resident")
@@ -163,6 +164,8 @@ def main():
 
     while True:
         doorbell.run_doorbell_application()
+        # Avoid multiple triggers for same visitor
+        sleep(10)
 
 
 if __name__ == "__main__":

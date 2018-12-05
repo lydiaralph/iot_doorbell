@@ -9,7 +9,6 @@ class Resident:
 
     is_at_home = False
     s = soundex.getInstance()
-    dictophone = SpeechRecogniser()
 
     def __init__(self, text_name, registered_names, twitter_impl,
                  log='../logging/smart_doorbell.full.log'):
@@ -18,6 +17,7 @@ class Resident:
         self.registered_names = registered_names
         self.text_name = text_name
         self.t = twitter_impl
+        self.dictophone = SpeechRecogniser(log=log)
         logging.basicConfig(filename=log, level=logging.DEBUG)
 
     def alert_visitor_at_door(self, visitor_name_audio):

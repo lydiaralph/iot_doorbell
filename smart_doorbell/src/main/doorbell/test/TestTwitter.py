@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+import twitter
+
+from doorbell.Twitter import TwitterImpl
 from doorbell.test.utils.MockTwitter import MockTwitter
 
 try:
@@ -39,6 +42,13 @@ class TestTwitter(unittest.TestCase):
     def test_post_to_profile(self):
         self.under_test.post_to_profile("abc")
         self.under_test.api.PostDirectMessage.assert_not_called()
+
+    def test_setup_with_bad_twitter_id_is_rejected(self):
+        with self.assertRaises(twitter.error.TwitterError):
+            TwitterImpl('test',
+                        twitter_standard_cfg='../main/resources/twitter.properties',
+                        twitter_cfg='doorbell/test/resources/twitter.{}.properties',
+                        log='doorbell/test/resources/logging/unittest.log')
 
 
 if __name__ == 'main':
