@@ -25,7 +25,6 @@ class AudioCapture:
 
         self.captured_sounds_dir = config.get('SOUNDS', 'captured_sounds_dir')
         logging.debug("Captured sounds will be stored in: " + self.captured_sounds_dir)
-        logging.info("Captured sounds will be stored in: ", self.captured_sounds_dir)
         if '${' in self.captured_sounds_dir:
             logging.error("Microphone was not configured properly")
             raise RuntimeError("Microphone was not configured properly")

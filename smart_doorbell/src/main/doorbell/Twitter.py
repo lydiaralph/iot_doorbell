@@ -1,21 +1,44 @@
-import twitter
 import logging
-
 from configparser import ConfigParser
+from pathlib import Path
+
+import twitter
 
 
 class TwitterImpl:
 
     def __init__(self, resident_name,
                  cfg='../resources/doorbell.properties',
-                 twitter_cfg='../resources/twitter.%s.properties',
+                 twitter_standard_cfg='../resources/twitter.properties',
+                 twitter_cfg='../resources/twitter.{}.properties',
                  log='../logging/smart_doorbell.full.log'):
 
-        logging.basicConfig(filename=log, level=logging.DEBUG)
+        standard_configuration = Path(cfg).resolve()
+        if not standard_configuration.exists():
+            raise RuntimeError("Could not find project configuration file at ",
+                               standard_configuration)
+
+        twitter_standard_configuration = Path(twitter_standard_cfg).resolve()
+        if not twitter_standard_configuration.exists():
+            raise RuntimeError("Could not find twitter standard configuration file at ",
+                               twitter_standard_configuration)
+
+        twitter_configuration = Path(twitter_cfg.format(resident_name)).resolve()
+        if not twitter_configuration.exists():
+            raise RuntimeError("Could not find twitter configuration file for ",
+                               resident_name, " at ", twitter_configuration)
+
+        log_file = Path(log)
+        if not log_file.exists():
+            raise RuntimeError("Could not find project logging file at ", log_file)
+
+        logging.basicConfig(filename=log_file, level=logging.DEBUG)
+
         config = ConfigParser()
         
-        config.read(cfg)
-        config.read(twitter_cfg.format(resident_name))
+        config.read(standard_configuration)
+        config.read(twitter_standard_configuration)
+        config.read(twitter_configuration)
 
         access_token = config.get(resident_name.upper(), 'twitter_access_token')
         access_token_secret = config.get(resident_name.upper(), 'twitter_access_token_secret')

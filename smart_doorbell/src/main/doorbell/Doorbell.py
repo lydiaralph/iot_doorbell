@@ -25,10 +25,11 @@ class Doorbell:
         self.residents = residents
         self.microphone = microphone
         self.dictophone = dictophone
-        #self.motion_sensor = MotionSensor(4)
-        #self.camera = Camera()
+        # self.motion_sensor = MotionSensor(4)
+        # self.camera = Camera()
         self.speaker = speaker
-        print("SmartDoorbell application is ready. Logs will now be located at ", log)
+        print("SmartDoorbell application is ready. Logs will now be located at ",
+              log)
 
     @staticmethod
     def set_up_logging():
@@ -38,8 +39,6 @@ class Doorbell:
         logging_file_name = "{}/{}".format(log_directory, logging_file_path)
         return logging_file_name
 
-
-
     @staticmethod
     def refresh_logs(log_directory, logging_file_path):
         print("Refreshing logging files")
@@ -47,7 +46,8 @@ class Doorbell:
         time_now = datetime.now().time()
 
         print("time: ", time_now)
-        archive_log_file_path = "archive-{}-{}-{}".format(date_now, time_now, logging_file_path)
+        archive_log_file_path = "archive-{}-{}-{}" \
+            .format(date_now, time_now, logging_file_path)
         if not os.path.exists(log_directory):
             print("Creating log directory")
             os.mkdir(log_directory)
@@ -67,8 +67,10 @@ class Doorbell:
     def doorbell_response(self):
         logging.info("Asking visitor to identify the resident")
         self.speaker.speak_who_do_you_want_to_speak_to()
-        resident_name_audio = self.microphone.capture_and_persist_audio('resident-name')
-        resident_name_audio_text = self.dictophone.recognise_speech(resident_name_audio)
+        resident_name_audio = \
+            self.microphone.capture_and_persist_audio('resident-name')
+        resident_name_audio_text = \
+            self.dictophone.recognise_speech(resident_name_audio)
         if resident_name_audio_text == self.dictophone.UNRECOGNISED:
             logging.info("Resident's name was not recognised")
             return False
@@ -76,27 +78,32 @@ class Doorbell:
         logging.info("Visitor has asked for %s", resident_name_audio_text)
         logging.info("Asking visitor to identify themselves")
         self.speaker.speak_please_say_your_name()
-        visitor_name_audio = self.microphone.capture_and_persist_audio('visitor-name')
-        visitor_name_audio_text = self.dictophone.recognise_speech(visitor_name_audio)
+        visitor_name_audio = \
+            self.microphone.capture_and_persist_audio('visitor-name')
+        visitor_name_audio_text = \
+            self.dictophone.recognise_speech(visitor_name_audio)
         logging.info("Visitor's name seems to be %s", visitor_name_audio_text)
         resident_recognised = False
         for resident in self.residents:
             if resident.requested_name_matches_this_resident(resident_name_audio_text):
                 resident_recognised = True
-                logging.info(resident.text_name, ' was requested by the visitor')
+                logging.info(resident.text_name +
+                             ' was requested by the visitor')
 
                 if resident.is_at_home:
                     resident.request_answer_door()
                 else:
                     self.speaker.speak_record_message()
-                    recorded_message_text_audio = self.microphone.capture_and_persist_audio('message')
-                    recorded_message_text = self.dictophone.recognise_speech(recorded_message_text_audio)
+                    recorded_message_text_audio = \
+                        self.microphone.capture_and_persist_audio('message')
+                    recorded_message_text = \
+                        self.dictophone.recognise_speech(recorded_message_text_audio)
 
                     captured_image = None
                     try:
                         logging.info("Attempting to take photograph")
                         self.speaker.speak_capture_picture()
-                        #captured_image = self.camera.capture_still()
+                        # captured_image = self.camera.capture_still()
                     finally:
                         resident.send_remote_notification(visitor_name_audio_text,
                                                           recorded_message_text,
@@ -106,8 +113,12 @@ class Doorbell:
 
     @staticmethod
     def set_up_residents():
-        resident_matt = Resident('Matt', ['matt', 'matty', 'matthew', 'mr ralph', 'matthew ralph'], TwitterImpl('matt'))
-        resident_lydia = Resident('Lydia', ['Lydia', 'Lid', 'mrs ralph'], TwitterImpl('lydia'))
+        resident_matt = Resident('Matt',
+                                 ['matt', 'matty', 'matthew', 'mr ralph', 'matthew ralph'],
+                                 TwitterImpl('matt'))
+        resident_lydia = Resident('Lydia',
+                                  ['Lydia', 'Lid', 'mrs ralph'],
+                                  TwitterImpl('lydia'))
         residents = [resident_matt, resident_lydia]
         residents_list_string = ', '.join(str(x.text_name) for x in residents)
         logging.debug("Registered residents: " + residents_list_string)
@@ -122,11 +133,12 @@ def main():
     # camera = Camera()
     speaker = Speaker()
 
-    doorbell = Doorbell(residents=residents, microphone=microphone, dictophone=dictophone, speaker=speaker)
-    
+    doorbell = Doorbell(residents=residents, microphone=microphone,
+                        dictophone=dictophone, speaker=speaker)
+
     while True:
         logging.info("Checking the door...")
-        #doorbell.motion_sensor.wait_for_motion()
+        # doorbell.motion_sensor.wait_for_motion()
         try:
             logging.info("Somebody is at the door")
             doorbell.speaker.speak_hello()
@@ -140,7 +152,8 @@ def main():
 
             # Default: alert everyone
             if not resident_recognised:
-                logging.info("Requested name was not recognised: sending general alert")
+                logging.info("Requested name was not recognised: "
+                             "sending general alert")
                 for resident in doorbell.residents:
                     resident.request_answer_door()
 
