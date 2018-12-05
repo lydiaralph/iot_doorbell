@@ -31,9 +31,10 @@ class TestResident(unittest.TestCase):
         self.under_test.is_at_home = False
         self.under_test.alert_visitor_at_door("Hannah")
         # Then
-        # self.under_test.t.post_direct_message_with_image.assert_called_once()
-        # self.under_test.t.post_direct_message_with_image\
-        #     .assert_called_once_with("Hannah visited the house and left a message: (blank)", None)
+        self.under_test.t.api.PostDirectMessage.assert_called_once()
+        self.under_test.t.api.PostDirectMessage.assert_called_once_with(
+            text="Hannah visited the house and left a message: (blank)",
+            user_id="test")
 
     def test_alert_visitor_at_door_resident_at_home(self):
         # When
@@ -55,7 +56,7 @@ class TestResident(unittest.TestCase):
         # When
         self.under_test.send_remote_notification(visitor_name_audio_text="audio")
         # Then
-        # self.under_test.t.post_direct_message_with_image.assert_called_once()
+        self.under_test.t.api.PostDirectMessage.assert_called_once()
 
     def test_request_name_matches_this_resident(self):
         # When

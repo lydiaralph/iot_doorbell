@@ -19,7 +19,22 @@ class TestTwitter(unittest.TestCase):
     def test_post_direct_message(self):
         self.under_test.post_direct_message("abc")
         self.under_test.api.PostDirectMessage.assert_called_once()
-        self.under_test.api.PostDirectMessage.assert_called_with(text="abc", user_id="test_user_id")
+        self.under_test.api.PostDirectMessage.assert_called_with(text="abc",
+                                                                 user_id="test_user_id")
+
+    def test_post_direct_message_with_image(self):
+        self.under_test.post_direct_message_with_image("abc", "test.jpg")
+        self.under_test.api.PostDirectMessage.assert_called_once()
+        self.under_test.api.PostDirectMessage.assert_called_with(text="abc",
+                                                                 user_id="test_user_id",
+                                                                 media_file_path="test.jpg",
+                                                                 media_type='dm_image')
+
+    def test_post_direct_message_with_none_image(self):
+        self.under_test.post_direct_message_with_image("abc", None)
+        self.under_test.api.PostDirectMessage.assert_called_once()
+        self.under_test.api.PostDirectMessage.assert_called_with(text="abc",
+                                                                 user_id="test_user_id")
 
     def test_post_to_profile(self):
         self.under_test.post_to_profile("abc")
