@@ -1,20 +1,36 @@
-import twitter
-
+import logging
 from configparser import ConfigParser
+from pathlib import Path
+
+import twitter
 
 
 class TwitterImpl:
 
-    # project_path = "/Users/ralphl01/Dropbox/LYDIA/TECH/BBC-MSc/2018-07_IoT/iot_labs/smart_doorbell/src/main"
+    def __init__(self, resident_name,
+                 twitter_standard_cfg='../resources/twitter.properties',
+                 twitter_cfg='../resources/twitter.{}.properties',
+                 log='../logging/smart_doorbell.full.log'):
 
-    def __init__(self, resident_name):
+        twitter_standard_configuration = Path(twitter_standard_cfg).resolve()
+        if not twitter_standard_configuration.exists():
+            raise RuntimeError("Could not find twitter standard configuration file at ",
+                               twitter_standard_configuration)
+
+        twitter_configuration = Path(twitter_cfg.format(resident_name)).resolve()
+        if not twitter_configuration.exists():
+            raise RuntimeError("Could not find twitter configuration file for ",
+                               resident_name, " at ", twitter_configuration)
+
+        log_file = Path(log)
+        if not log_file.exists():
+            raise RuntimeError("Could not find project logging file at ", log_file)
+
+        logging.basicConfig(filename=log_file, level=logging.DEBUG)
+
         config = ConfigParser()
-        
-        #config.read(self.project_path + '/resources/twitter.properties')
-        #config.read(self.project_path + '/resources/twitter.' + resident_name + '.properties')
-
-        config.read('../resources/twitter.properties')
-        config.read('../resources/twitter.' + resident_name + '.properties')
+        config.read(twitter_standard_configuration)
+        config.read(twitter_configuration)
 
         access_token = config.get(resident_name.upper(), 'twitter_access_token')
         access_token_secret = config.get(resident_name.upper(), 'twitter_access_token_secret')
@@ -32,25 +48,24 @@ class TwitterImpl:
 
     def get_statuses(self):
         statuses = self.api.GetUserTimeline(user_id=self.user_id)
-        # TODO: Change to log
-        print([s.text for s in statuses])
+        logging.info([s.text for s in statuses])
 
     def post_direct_message(self, message):
         self.api.PostDirectMessage(text=message, user_id=self.user_id)
-        # TODO: Change to log
-        print("Successfully sent message to Twitter user", self.user_id)
+        logging.info("Successfully sent message to Twitter user %s", self.user_id)
 
     def post_direct_message_with_image(self, message, image_path):
         if image_path is None:
-            self.api.PostDirectMessage(self, message)
+            logging.info("Posting message with no image")
+            self.api.PostDirectMessage(text=message, user_id=self.user_id)
         else:
-            self.api.PostDirectMessage(text=message, user_id=self.user_id, media_file_path=image_path, media_type='dm_image')
-        # TODO: Change to log
-        print("Successfully sent message to Twitter user", self.user_id)
+            logging.info("Posting message with image")
+            self.api.PostDirectMessage(text=message, user_id=self.user_id,
+                                       media_file_path=image_path, media_type='dm_image')
+        logging.info("Successfully sent message to Twitter user %s", self.user_id)
 
     def post_to_profile(self, message):
-        # TODO: Change to log
-        print("Method 'post_to_profile' not supported")
+        logging.error("Method 'post_to_profile' not supported")
         pass
 
 
